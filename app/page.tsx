@@ -1,11 +1,13 @@
 // import Image from "next/image";
 
-import { Navbar } from "@/components/Navbar";
+import Carousel from "@/components/Carousel";
+
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-green-50">
-      <Navbar/>
+    <div className="min-h-screen">
+      {/* <Navbar/> */}
+      <Carousel/>
     </div>
   );
 }
