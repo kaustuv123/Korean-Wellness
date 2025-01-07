@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export function Navbar() {
+  // await new Promise((r) => setTimeout(r, 5000));
   const [user, setUser] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileShopOpen, setIsMobileShopOpen] = useState(false);
@@ -415,7 +416,7 @@ export function Navbar() {
                </div>
 
                 <ul className="px-4 py-2">
-                  {selectedCategory && categories[selectedCategory].map((item) => (
+                  {selectedCategory && categories[selectedCategory].map((item: string) => (
                     <li key={item} className="py-2 border-b hover:text-gray-600 transition-colors">
                       {item}
                     </li>

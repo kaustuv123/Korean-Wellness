@@ -1,5 +1,4 @@
 import ProductCard from '@/components/ProductCard';
-import Image from 'next/image';
 import React from 'react';
 
 interface Product {
@@ -110,8 +109,6 @@ const ProductPage = async () => {
     //       </span>
     //     ));
     //   };
-
-    await new Promise((r) => setTimeout(r, 5000));
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Mail, Facebook, Instagram, Youtube } from 'lucide-react';
 
-const Footer = () => {
+const Footer = async () => {
   return (
     <footer className="bg-black text-white py-12 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">

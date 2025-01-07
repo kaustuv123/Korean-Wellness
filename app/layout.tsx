@@ -1,7 +1,12 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Quicksand } from "next/font/google";
+// import type { Metadata } from "next";
+// import { Geist, Geist_Mono, Quicksand } from "next/font/google";
+import { Quicksand } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Suspense } from "react";
+import { NavbarLoading } from "@/components/NavbarLoading";
+import { FooterLoading } from "@/components/FooterLoading";
+import { NavbarContainer } from "@/components/NavbarContainer";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -30,8 +35,13 @@ export default function RootLayout({
       <body
         className={`${quickSand.variable} ${quickSand.variable} antialiased`}
       >
-        <Navbar />
+        <Suspense fallback={<NavbarLoading />}>
+          <NavbarContainer />
+        </Suspense>
         {children}
+        <Suspense fallback={<FooterLoading />}>
+          <Footer />
+        </Suspense>
       </body>
     </html>
   );

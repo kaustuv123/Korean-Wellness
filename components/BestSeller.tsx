@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useEffect, useRef, useState, type JSX } from 'react';
-import { ChevronLeft, ChevronRight, Star, StarHalf } from 'lucide-react';
-import Image from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 
 // Define interface for the product data structure
@@ -179,19 +178,19 @@ const BestSeller: React.FC<ProductShowcaseProps> = ({ className }) => {
     };
   
     // Render star rating
-    const renderStars = (rating: number): JSX.Element[] => {
-      const stars: JSX.Element[] = [];
-      for (let i = 0; i < 5; i++) {
-        if (i < Math.floor(rating)) {
-          stars.push(<Star key={i} className="w-4 h-4 fill-current text-yellow-400" />);
-        } else if (i === Math.floor(rating) && rating % 1 !== 0) {
-          stars.push(<StarHalf key={i} className="w-4 h-4 fill-current text-yellow-400" />);
-        } else {
-          stars.push(<Star key={i} className="w-4 h-4 text-gray-300" />);
-        }
-      }
-      return stars;
-    };
+    // const renderStars = (rating: number): JSX.Element[] => {
+    //   const stars: JSX.Element[] = [];
+    //   for (let i = 0; i < 5; i++) {
+    //     if (i < Math.floor(rating)) {
+    //       stars.push(<Star key={i} className="w-4 h-4 fill-current text-yellow-400" />);
+    //     } else if (i === Math.floor(rating) && rating % 1 !== 0) {
+    //       stars.push(<StarHalf key={i} className="w-4 h-4 fill-current text-yellow-400" />);
+    //     } else {
+    //       stars.push(<Star key={i} className="w-4 h-4 text-gray-300" />);
+    //     }
+    //   }
+    //   return stars;
+    // };
   
     return (
         <div className={`relative w-full max-w-[1400px] mx-auto px-4 md:px-6 ${className || ''} pb-5`}>

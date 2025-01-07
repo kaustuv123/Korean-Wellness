@@ -1,15 +1,40 @@
 import React from 'react';
 
 const LoadingPage = () => {
-  // We'll create multiple skeleton cards to mimic the product grid layout
+  // Create arrays for skeleton elements
   const skeletonCards = Array(8).fill(0);
+  const carouselIndicators = Array(4).fill(0); // Assuming 4 carousel slides
 
   return (
     <div className="p-4">
       {/* Loading header with animated gradient */}
-      <div className="flex items-center justify-between mb-8">
+      {/* <div className="flex items-center justify-between mb-8">
         <div className="h-8 w-48 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded" />
         <div className="h-8 w-32 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded" />
+      </div> */}
+
+      {/* Carousel skeleton */}
+      <div className="relative w-full mb-8">
+        {/* Main carousel container */}
+        <div className="w-full h-96 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded-lg overflow-hidden">
+          {/* Navigation arrows skeleton */}
+          <div className="absolute inset-y-0 left-0 flex items-center">
+            <div className="h-12 w-12 bg-gray-300 rounded-full mx-4 animate-pulse" />
+          </div>
+          <div className="absolute inset-y-0 right-0 flex items-center">
+            <div className="h-12 w-12 bg-gray-300 rounded-full mx-4 animate-pulse" />
+          </div>
+          
+          {/* Carousel indicators skeleton */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {carouselIndicators.map((_, index) => (
+              <div
+                key={index}
+                className="h-2 w-2 rounded-full bg-gray-300 animate-pulse"
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Grid of skeleton cards */}
