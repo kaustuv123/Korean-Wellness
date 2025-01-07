@@ -12,7 +12,7 @@ const slides = [
         title: "Care Kit Shampoo",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download.jpeg",
+        image: "/image/download2.jpeg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
     {
@@ -20,7 +20,7 @@ const slides = [
         title: "Care Shampoo",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download.jpeg",
+        image: "/image/download2.jpeg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
     {
@@ -28,7 +28,7 @@ const slides = [
         title: "Kit Shampoo",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download.jpeg",
+        image: "/image/download2.jpeg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
     {
@@ -36,7 +36,7 @@ const slides = [
         title: "Shampoo",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download.jpeg",
+        image: "/image/download2.jpeg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
 ];
@@ -76,7 +76,7 @@ export function Carousel(){
 
                             {/* Image Container */}
                             <div className="h-1/2 xl:w-1/2 xl:h-full relative">
-                                <Image src={slide.image} alt="" fill sizes="100%" className="object-cover"/>
+                                <Image src={slide.image} alt="" fill sizes="100%" className="flex-none object-cover"/>
                             </div>
                         </div>
                     ))
