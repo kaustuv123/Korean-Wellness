@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { FaEnvelope, FaLock, FaUser } from "react-icons/fa6";
+import { FaEnvelope, FaLock, FaUser, FaPhone } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 
 interface LoginPageProps {
@@ -47,18 +47,45 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
         </div>
 
         {state !== "Login" && (
-          <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full">
-            <FaUser className="text-gray-400 flex-shrink-0" />
-            <input
-              className="outline-none text-sm w-full"
-              type="text"
-              placeholder="Full Name"
-              required
-            />
-          </div>
+          <>
+            <div className="flex gap-4 mb-4">
+              <div className="border flex-1 px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full">
+                <FaUser className="text-gray-400 flex-shrink-0" />
+                <input
+                  className="outline-none text-sm w-full"
+                  type="text"
+                  placeholder="First Name"
+                  required
+                />
+              </div>
+              <div className="border flex-1 px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full">
+                <FaUser className="text-gray-400 flex-shrink-0" />
+                <input
+                  className="outline-none text-sm w-full"
+                  type="text"
+                  placeholder="Last Name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mb-4">
+              <FaPhone className="text-gray-400 flex-shrink-0" />
+              <input
+                className="outline-none text-sm w-full"
+                type="tel"
+                pattern="[0-9]{10}"
+                maxLength={10}
+                minLength={10}
+                placeholder="Mobile Number"
+                title="Please enter a valid 10-digit phone number"
+                required
+              />
+            </div>
+          </>
         )}
 
-        <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mt-4">
+        <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mb-4">
           <FaEnvelope className="text-gray-400 flex-shrink-0" />
           <input
             className="outline-none text-sm w-full"
@@ -68,7 +95,7 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
           />
         </div>
 
-        <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mt-4">
+        <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mb-4">
           <FaLock className="text-gray-400 flex-shrink-0" />
           <input
             className="outline-none text-sm w-full"
@@ -77,6 +104,18 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
             required
           />
         </div>
+
+        {state !== "Login" && (
+          <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mb-4">
+            <FaLock className="text-gray-400 flex-shrink-0" />
+            <input
+              className="outline-none text-sm w-full"
+              type="password"
+              placeholder="Confirm Password"
+              required
+            />
+          </div>
+        )}
 
         <p className="text-sm text-eggPlant my-4 cursor-pointer hover:underline">
           Forgot Password?
