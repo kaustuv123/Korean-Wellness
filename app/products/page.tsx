@@ -20,7 +20,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
-  title = "Retinal 0.1% Face Serum",
+  title = "Kyren Moisture Nature Body Wash",
   subheading = "Mild-Strength Retinal to visibly reduce signs of aging",
   description = "A specialized Vitamin-A derivative (Retinal) along with Bakuchiol, Olive Squalane to reduce fine visible signs of aging. One of the most effective retinal vitamin-A facial skin care, working as quickly as 4 hours at improving elasticity and texture. By encouraging cell turnover, this serum promotes a more youthful, radiant complexion.",
   price = 799,
@@ -29,9 +29,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   // Sample product images - in real app these would come from props
   const productImages: ProductImage[] = [
-    { id: 1, url: "/image/download.jpeg", alt: "Product main view" },
-    { id: 2, url: "/image/download2.jpeg", alt: "Product angle view" },
-    { id: 3, url: "/image/download.jpeg", alt: "Product detail view" },
+    { id: 1, url: "/image/kyren4.jpeg", alt: "Product main view" },
+    { id: 2, url: "/image/kyren3.jpeg", alt: "Product angle view" },
+    { id: 3, url: "/image/kyren2.jpeg", alt: "Product detail view" },
   ];
 
   const [selectedImage, setSelectedImage] = useState<ProductImage>(productImages[0]);

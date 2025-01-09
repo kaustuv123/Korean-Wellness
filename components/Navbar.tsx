@@ -5,6 +5,8 @@ import { FaCartShopping, FaUser } from "react-icons/fa6";
 import { Menu, X, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import LoginPage from './LoginPage';
+
 
 export function Navbar() {
   // await new Promise((r) => setTimeout(r, 5000));
@@ -12,6 +14,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileShopOpen, setIsMobileShopOpen] = useState(false);
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   // Enhanced toggle functions with proper state management
   const toggleMenu = () => {
@@ -20,8 +23,8 @@ export function Navbar() {
   };
   const toggleMobileShop = () => setIsMobileShopOpen(!isMobileShopOpen);
   const toggleMobileUser = () => setIsMobileUserOpen(!isMobileUserOpen);
-  const [activeCategoryMenu, setActiveCategoryMenu] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [activeCategoryMenu, setActiveCategoryMenu] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
 
   const shopByConcern = [
     'Acne',
@@ -65,13 +68,16 @@ export function Navbar() {
     "Body Care": bodyCare,
   };
 
+  type CategoryKey = keyof typeof categories;
+
+
   // New functions for category navigation
   const openCategoryMenu = () => {
     setActiveCategoryMenu('categories');
     setIsMobileShopOpen(false);
   };
 
-  const openSubcategories = (category) => {
+  const openSubcategories = (category: CategoryKey) => {
     setSelectedCategory(category);
   };
 
@@ -85,11 +91,11 @@ export function Navbar() {
 
 
   const products = [
-    { id: 1, name: "Product 1", image: "/image/download2.jpeg" },
-    { id: 2, name: "Product 2", image: "/image/download2.jpeg" },
-    { id: 3, name: "Product 3", image: "/image/download2.jpeg" },
-    { id: 4, name: "Product 4", image: "/image/download2.jpeg" },
-    { id: 5, name: "Product 5", image: "/image/download2.jpeg" },
+    { id: 1, name: "Product 1", image: "/image/kyren2.jpeg" },
+    { id: 2, name: "Product 2", image: "/image/kyren2.jpeg" },
+    { id: 3, name: "Product 3", image: "/image/kyren2.jpeg" },
+    { id: 4, name: "Product 4", image: "/image/kyren2.jpeg" },
+    { id: 5, name: "Product 5", image: "/image/kyren2.jpeg" },
   ];
 
   return (
@@ -224,9 +230,15 @@ export function Navbar() {
         {/* Desktop user controls */}
         <div className="hidden md:flex flex-row items-center gap-6">
           {!user ? (
-            <button className="bg-eggPlant text-white py-2 px-6 sm:px-10 text-[18px] rounded-full transition-colors">
-              Login
-            </button>
+            <>
+              <button 
+                onClick={() => setShowLogin(true)} 
+                className="bg-eggPlant text-white py-2 px-6 sm:px-10 text-[18px] rounded-full transition-colors"
+              >
+                Login
+              </button>
+              {showLogin && <LoginPage onClose={() => setShowLogin(false)} />}
+            </>
           ) : (
             <div className="flex items-center gap-8">
               <FaCartShopping className="text-2xl cursor-pointer hover:text-gray-600 transition-colors" />
@@ -273,7 +285,7 @@ export function Navbar() {
                 className="flex items-center justify-between w-full hover:text-gray-600 transition-colors"
               >
                 <span>Shop</span>
-                {/* <ChevronDown size={20} /> */}
+                <ChevronRight size={20} />
               </button>
             </li>
             <li className="py-2 border-b">
@@ -292,9 +304,15 @@ export function Navbar() {
           {/* Mobile user controls */}
           <div className="px-4 py-4 border-t">
             {!user ? (
-              <button className="w-full bg-eggPlant  py-2 px-6 text-sm rounded-full hover:bg-[#915063] transition-colors">
-                Login
-              </button>
+              <>
+                <button 
+                  onClick={() => setShowLogin(true)}
+                  className="w-full bg-eggPlant text-white py-2 px-6 text-sm rounded-full hover:bg-[#915063] transition-colors"
+                >
+                  Login
+                </button>
+                {showLogin && <LoginPage onClose={() => setShowLogin(false)} />}
+              </>
             ) : (
               <div className="space-y-4">
                 <div className="flex justify-around">
@@ -387,7 +405,7 @@ export function Navbar() {
             {Object.keys(categories).map((category) => (
               <li key={category} className="py-2 border-b">
                 <button
-                  onClick={() => openSubcategories(category)}
+                  onClick={() => openSubcategories(category as CategoryKey)}
                   className="flex items-center justify-between w-full hover:text-gray-600 transition-colors"
                 >
                   <span>{category}</span>

@@ -25,7 +25,7 @@ interface Product {
       rating: 4,
       originalPrice: 299,
       discountedPrice: 284,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     },
     {
@@ -35,7 +35,7 @@ interface Product {
       rating: 4,
       originalPrice: 399,
       discountedPrice: 379,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     },
     {
@@ -45,7 +45,7 @@ interface Product {
       rating: 4,
       originalPrice: 549,
       discountedPrice: 521,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     },
     {
@@ -55,7 +55,7 @@ interface Product {
       rating: 4,
       originalPrice: 549,
       discountedPrice: 521,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     },
     {
@@ -65,7 +65,7 @@ interface Product {
       rating: 4,
       originalPrice: 549,
       discountedPrice: 521,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     },
     {
@@ -75,7 +75,7 @@ interface Product {
       rating: 4,
       originalPrice: 549,
       discountedPrice: 521,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     },
     {
@@ -85,7 +85,7 @@ interface Product {
       rating: 4,
       originalPrice: 549,
       discountedPrice: 521,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     },
     {
@@ -95,7 +95,7 @@ interface Product {
       rating: 4,
       originalPrice: 699,
       discountedPrice: 664,
-      image: "/image/download2.jpeg",
+      image: "/image/kyren2.jpeg",
       discount: 5
     }
   ];

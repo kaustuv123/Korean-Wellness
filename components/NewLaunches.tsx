@@ -29,7 +29,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 299,
     discountedPrice: 284,
-    image: "/image/download.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -39,7 +39,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 399,
     discountedPrice: 379,
-    image: "/image/download.jpeg",
+    image: "/image/kyren3.jpeg",
     discount: 5
   },
   {
@@ -49,7 +49,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/download.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -59,7 +59,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/download.jpeg",
+    image: "/image/kyren3.jpeg",
     discount: 5
   },
   {
@@ -69,7 +69,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/download.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -79,7 +79,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/download.jpeg",
+    image: "/image/kyren3.jpeg",
     discount: 5
   },
   {
@@ -89,7 +89,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/download.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -99,7 +99,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 699,
     discountedPrice: 664,
-    image: "/image/download.jpeg",
+    image: "/image/kyren3.jpeg",
     discount: 5
   }
 ];

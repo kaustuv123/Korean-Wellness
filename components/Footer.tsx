@@ -1,8 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Facebook, Instagram, Youtube } from 'lucide-react';
+// import { Mail, Facebook, Instagram, Youtube } from 'lucide-react';
+import { FaFacebookF, FaYoutube } from "react-icons/fa6";
+import { CiMail } from "react-icons/ci";
+import { FaInstagram } from "react-icons/fa";
 
-const Footer = async () => {
+const Footer = () => {
   return (
     <footer className="bg-black text-white py-12 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -45,16 +48,20 @@ const Footer = async () => {
           </p>
           <div className="flex space-x-4">
             <Link href="/email" className="text-gray-300 hover:text-white">
-              <Mail size={24} />
+              {/* <Mail size={24} /> */}
+              <CiMail size={24} />
             </Link>
             <Link href="/facebook" className="text-gray-300 hover:text-white">
-              <Facebook size={24} />
+              {/* <Facebook size={24} /> */}
+              <FaFacebookF size={24} />
             </Link>
             <Link href="/instagram" className="text-gray-300 hover:text-white">
-              <Instagram size={24} />
+              {/* <Instagram size={24} /> */}
+              <FaInstagram size={24} />
             </Link>
             <Link href="/youtube" className="text-gray-300 hover:text-white">
-              <Youtube size={24} />
+              {/* <Youtube size={24} /> */}
+              <FaYoutube size={24} />
             </Link>
           </div>
         </div>

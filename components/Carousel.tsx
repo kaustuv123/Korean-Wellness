@@ -6,21 +6,30 @@ import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { FaArrowRight } from "react-icons/fa";
 
-const slides = [
+type Slide = {
+    id: number,
+    title: string,
+    description: string,
+    url: string,
+    image: string,
+    bg: string,
+}
+
+const slides: Slide[] = [
     {
         id: 1,
-        title: "Care Kit Shampoo",
+        title: "Kyren Moisture Nature Body Wash",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download2.jpeg",
+        image: "/image/kyren5.jpg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
     {
         id: 2,
-        title: "Care Shampoo",
+        title: "Kyren Moisture Nature Body Lotion",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download2.jpeg",
+        image: "/image/kyren.jpeg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
     {
@@ -28,7 +37,7 @@ const slides = [
         title: "Kit Shampoo",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download2.jpeg",
+        image: "/image/kyren.jpeg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
     {
@@ -36,14 +45,14 @@ const slides = [
         title: "Shampoo",
         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, mollitia.",
         url: "/",
-        image: "/image/download2.jpeg",
+        image: "/image/kyren.jpeg",
         bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
     },
 ];
 
 export function Carousel(){
 
-    const[current, setCurrent] = useState(0);
+    const[current, setCurrent] = useState<number>(0);
 
     const nextSlide = () => {
         setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
