@@ -1,15 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import React from "react";
 import { X } from "lucide-react";
 import { FaEnvelope, FaLock, FaUser, FaPhone } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
+import { useRouter } from "next/navigation";
+
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 interface LoginPageProps {
   onClose: () => void;
 }
 
 const LoginPage = ({ onClose }: LoginPageProps) => {
+  const router = useRouter();
+
+  const [user, setUser] = React.useState({
+    firstName: "",
+    lastName: "",
+    contactNo: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = React.useState(false);
+
   const [state, setState] = useState<"Login" | "Sign Up">("Login");
 
   useEffect(() => {
@@ -23,13 +40,37 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
     console.log("Google login clicked");
   };
 
+  const onlogin = async () => {};
+
+  const onsignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("hello");
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/users/signup", user);
+      console.log("Signup success", response.data);
+      onClose();
+    } catch (error) {
+      console.log("Signup failed ");
+
+      toast.error("signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 z-[100] backdrop-blur-sm bg-black/30 flex justify-center items-center p-4">
-      <form className="relative bg-white p-6 sm:p-10 rounded-xl text-slate-500 w-full max-w-[420px] max-h-[90vh] overflow-y-auto">
+      <form
+        onSubmit={state === "Login" ? onlogin : onsignup}
+        className="relative bg-white p-6 sm:p-10 rounded-xl text-slate-500 w-full max-w-[420px] max-h-[90vh] overflow-y-auto"
+      >
         <h1 className="text-center text-xl sm:text-2xl text-neutral-700 font-medium">
           {state}
         </h1>
-        <p className="text-sm text-center mb-6">Welcome Back! Please sign in to continue</p>
+        <p className="text-sm text-center mb-6">
+          Welcome Back! Please sign in to continue
+        </p>
 
         <button
           type="button"
@@ -54,6 +95,10 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
                 <input
                   className="outline-none text-sm w-full"
                   type="text"
+                  value={user.firstName}
+                  onChange={(e) =>
+                    setUser({ ...user, firstName: e.target.value })
+                  }
                   placeholder="First Name"
                   required
                 />
@@ -63,6 +108,10 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
                 <input
                   className="outline-none text-sm w-full"
                   type="text"
+                  value={user.lastName}
+                  onChange={(e) =>
+                    setUser({ ...user, lastName: e.target.value })
+                  }
                   placeholder="Last Name"
                   required
                 />
@@ -74,6 +123,10 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
               <input
                 className="outline-none text-sm w-full"
                 type="tel"
+                value={user.contactNo}
+                onChange={(e) =>
+                  setUser({ ...user, contactNo: e.target.value })
+                }
                 pattern="[0-9]{10}"
                 maxLength={10}
                 minLength={10}
@@ -90,6 +143,8 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
           <input
             className="outline-none text-sm w-full"
             type="email"
+            value={user.email}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
             placeholder="Enter Your Email ID"
             required
           />
@@ -100,6 +155,8 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
           <input
             className="outline-none text-sm w-full"
             type="password"
+            value={user.password}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
             placeholder="Enter Your Password"
             required
           />
@@ -120,11 +177,17 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
         <p className="text-sm text-eggPlant my-4 cursor-pointer hover:underline">
           Forgot Password?
         </p>
-        <button 
+
+        <button
           type="submit"
-          className="bg-eggPlant w-full text-white py-2 rounded-full hover:bg-[#915063] transition-colors text-sm sm:text-base"
+          disabled={loading}
+          className="bg-eggPlant w-full text-white py-2 rounded-full hover:bg-[#915063] transition-colors text-sm sm:text-base disabled:opacity-50"
         >
-          {state === "Login" ? "Login" : "Create Account"}
+          {loading
+            ? "Creating Account..."
+            : state === "Login"
+            ? "Login"
+            : "Create Account"}
         </button>
 
         {state === "Login" ? (
