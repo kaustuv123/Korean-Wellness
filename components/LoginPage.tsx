@@ -28,6 +28,18 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
   const [loading, setLoading] = React.useState(false);
 
   const [state, setState] = useState<"Login" | "Sign Up">("Login");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState({
+    phone: "",
+    password: "",
+  });
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -38,6 +50,23 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
 
   const handleGoogleLogin = () => {
     console.log("Google login clicked");
+  };
+
+  const isFormValid = () => {
+    if (state === "Login") {
+      return formData.email.trim() !== "" && formData.password.trim() !== "";
+    } else {
+      return (
+        formData.firstName.trim() !== "" &&
+        formData.lastName.trim() !== "" &&
+        formData.phone.trim() !== "" &&
+        formData.email.trim() !== "" &&
+        formData.password.trim() !== "" &&
+        formData.confirmPassword.trim() !== "" &&
+        errors.phone === "" &&
+        errors.password === ""
+      );
+    }
   };
 
   const onlogin = async () => {};
@@ -69,7 +98,9 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
           {state}
         </h1>
         <p className="text-sm text-center mb-6">
-          Welcome Back! Please sign in to continue
+          {state === "Login"
+            ? "Welcome Back! Please sign in to continue"
+            : "Create an account to get started"}
         </p>
 
         <button
@@ -100,6 +131,10 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
                     setUser({ ...user, firstName: e.target.value })
                   }
                   placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -113,27 +148,43 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
                     setUser({ ...user, lastName: e.target.value })
                   }
                   placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   required
                 />
               </div>
             </div>
 
-            <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mb-4">
-              <FaPhone className="text-gray-400 flex-shrink-0" />
-              <input
-                className="outline-none text-sm w-full"
-                type="tel"
-                value={user.contactNo}
-                onChange={(e) =>
-                  setUser({ ...user, contactNo: e.target.value })
-                }
-                pattern="[0-9]{10}"
-                maxLength={10}
-                minLength={10}
-                placeholder="Mobile Number"
-                title="Please enter a valid 10-digit phone number"
-                required
-              />
+            <div className="mb-4">
+              <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full">
+                <FaPhone className="text-gray-400 flex-shrink-0" />
+                <input
+                  className="outline-none text-sm w-full"
+                  type="tel"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  placeholder="Mobile Number"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    setFormData({ ...formData, phone: value });
+                    if (value.length !== 10 && value.length > 0) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        phone: "Mobile Number must be of 10 Digits",
+                      }));
+                    } else {
+                      setErrors((prev) => ({ ...prev, phone: "" }));
+                    }
+                  }}
+                  required
+                />
+              </div>
+              {errors.phone && (
+                <p className="text-red-500 text-xs mt-1 ml-2">{errors.phone}</p>
+              )}
             </div>
           </>
         )}
@@ -146,6 +197,10 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
             value={user.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
             placeholder="Enter Your Email ID"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
             required
           />
         </div>
@@ -158,30 +213,58 @@ const LoginPage = ({ onClose }: LoginPageProps) => {
             value={user.password}
             onChange={(e) => setUser({ ...user, password: e.target.value })}
             placeholder="Enter Your Password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
             required
           />
         </div>
 
         {state !== "Login" && (
-          <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mb-4">
-            <FaLock className="text-gray-400 flex-shrink-0" />
-            <input
-              className="outline-none text-sm w-full"
-              type="password"
-              placeholder="Confirm Password"
-              required
-            />
+          <div className="mb-4">
+            <div className="border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full">
+              <FaLock className="text-gray-400 flex-shrink-0" />
+              <input
+                className="outline-none text-sm w-full"
+                type="password"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData({ ...formData, confirmPassword: value });
+                  if (value !== formData.password) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      password: "Passwords do not match",
+                    }));
+                  } else {
+                    setErrors((prev) => ({ ...prev, password: "" }));
+                  }
+                }}
+                required
+              />
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1 ml-2">
+                {errors.password}
+              </p>
+            )}
           </div>
         )}
 
-        <p className="text-sm text-eggPlant my-4 cursor-pointer hover:underline">
+        <p className="text-sm text-eggPlant my-4 cursor-pointer hover:underline max-w-auto">
           Forgot Password?
         </p>
 
         <button
           type="submit"
-          disabled={loading}
-          className="bg-eggPlant w-full text-white py-2 rounded-full hover:bg-[#915063] transition-colors text-sm sm:text-base disabled:opacity-50"
+          disabled={!isFormValid()}
+          className={`w-full py-2 rounded-full text-sm sm:text-base transition-colors ${
+            isFormValid()
+              ? "bg-eggPlant text-white hover:bg-[#915063]"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
         >
           {loading
             ? "Creating Account..."
