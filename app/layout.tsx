@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { NavbarLoading } from "@/components/NavbarLoading";
 import { FooterLoading } from "@/components/FooterLoading";
 import { NavbarContainer } from "@/components/NavbarContainer";
+import { Toaster } from "react-hot-toast";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
         <Suspense fallback={<FooterLoading />}>
           <Footer />
         </Suspense>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

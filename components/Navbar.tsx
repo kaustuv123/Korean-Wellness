@@ -1,19 +1,76 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaCartShopping, FaUser } from "react-icons/fa6";
 import { Menu, X, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import LoginPage from "./LoginPage";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export function Navbar() {
+  const router = useRouter();
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const response = await axios.get("/api/users/userData");
+        if (response.data.success) {
+          setIsLoggedIn(true);
+          localStorage.setItem("isLoggedIn", "true");
+        } else {
+          setIsLoggedIn(false);
+          localStorage.removeItem("isLoggedIn");
+        }
+      } catch (error) {
+        setIsLoggedIn(false);
+        localStorage.removeItem("isLoggedIn");
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    checkLoginStatus();
+
+    const handleLoginStateChange = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener("loginStateChange", handleLoginStateChange);
+
+    return () => {
+      window.removeEventListener("loginStateChange", handleLoginStateChange);
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get("/api/users/logout");
+
+      if (response.data.success) {
+        setIsLoggedIn(false);
+        localStorage.removeItem("isLoggedIn");
+        toast.success("Logged out successfully");
+        router.push("/");
+      }
+    } catch (error) {
+      toast.error("Failed to logout");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // await new Promise((r) => setTimeout(r, 5000));
-  const [user, setUser] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileShopOpen, setIsMobileShopOpen] = useState(false);
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
+  // const [showLogin, setShowLogin] = useState(false);
 
   // Enhanced toggle functions with proper state management
   const toggleMenu = () => {
@@ -88,11 +145,11 @@ export function Navbar() {
   };
 
   const products = [
-    { id: 1, name: "Product 1", image: "/image/kyren2.jpeg" },
-    { id: 2, name: "Product 2", image: "/image/kyren2.jpeg" },
-    { id: 3, name: "Product 3", image: "/image/kyren2.jpeg" },
-    { id: 4, name: "Product 4", image: "/image/kyren2.jpeg" },
-    { id: 5, name: "Product 5", image: "/image/kyren2.jpeg" },
+    { id: 1, name: "Shampoo", image: "/image/kyren2.jpeg" },
+    { id: 2, name: "Treatment", image: "/image/kyren2.jpeg" },
+    { id: 3, name: "Body Wash", image: "/image/kyren2.jpeg" },
+    { id: 4, name: "Body Lotion", image: "/image/kyren2.jpeg" },
+    { id: 5, name: "Hand Wash", image: "/image/kyren2.jpeg" },
   ];
 
   return (
@@ -116,9 +173,11 @@ export function Navbar() {
         <div className="hidden md:flex justify-between gap-10 text-[20px]">
           <ul className="flex justify-between gap-10 ">
             <li className="group relative inline-block">
-              <a className="cursor-pointer pb-1 border-b-2 border-transparent hover:border-black">
-                Shop
-              </a>
+              <Link href="/categories">
+                <p className="cursor-pointer pb-1 border-b-2 border-transparent hover:border-black">
+                  Shop
+                </p>
+              </Link>
 
               <div className="invisible group-hover:visible absolute -translate-x-1/2 z-50 pt-4">
                 <div className="rounded-md shadow-lg bg-white">
@@ -152,9 +211,12 @@ export function Navbar() {
             </li>
 
             <li className="group relative inline-block">
-              <a className="cursor-pointer pb-1 border-b-2 border-transparent hover:border-black">
+              <Link
+                href="/products"
+                className="cursor-pointer pb-1 border-b-2 border-transparent hover:border-black"
+              >
                 Products
-              </a>
+              </Link>
 
               <div className="invisible group-hover:visible absolute left-0 z-50 pt-4 w-[800px] -translate-x-1/4">
                 <div className="rounded-md shadow-lg bg-white">
@@ -229,23 +291,22 @@ export function Navbar() {
               Blog
             </li>
             <li className="cursor-pointer pb-1 border-b-2 border-transparent hover:border-black">
-              About
+              <Link href="/about">About</Link>
             </li>
           </ul>
         </div>
 
         {/* Desktop user controls */}
         <div className="hidden md:flex flex-row items-center gap-6">
-          {!user ? (
-            <>
-              <button
-                onClick={() => setShowLogin(true)}
-                className="bg-eggPlant text-white py-2 px-6 sm:px-10 text-[18px] rounded-full transition-colors"
-              >
-                Login
-              </button>
-              {showLogin && <LoginPage onClose={() => setShowLogin(false)} />}
-            </>
+          {isInitializing ? (
+            <div className="w-24 h-10 bg-gray-200 animate-pulse rounded-full"></div>
+          ) : !isLoggedIn ? (
+            <Link
+              href="/auth/login"
+              className="bg-eggPlant text-white py-2 px-6 sm:px-10 text-[18px] rounded-full transition-colors"
+            >
+              Login
+            </Link>
           ) : (
             <div className="flex items-center gap-8">
               <FaCartShopping className="text-2xl cursor-pointer hover:text-gray-600 transition-colors" />
@@ -255,8 +316,11 @@ export function Navbar() {
                 </div>
                 <div className="absolute z-10 w-auto min-w-[120px] pt-2 left-1/2 -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                   <ul className="bg-white rounded-md shadow-lg border py-2 text-center text-[18px]">
-                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors">
-                      Logout
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
+                      onClick={handleLogout}
+                    >
+                      {isLoading ? "Logging out..." : "Logout"}
                     </li>
                   </ul>
                 </div>
@@ -314,16 +378,15 @@ export function Navbar() {
 
           {/* Mobile user controls */}
           <div className="px-4 py-4 border-t">
-            {!user ? (
-              <>
-                <button
-                  onClick={() => setShowLogin(true)}
-                  className="w-full bg-eggPlant text-white py-2 px-6 text-sm rounded-full hover:bg-[#915063] transition-colors"
-                >
-                  Login
-                </button>
-                {showLogin && <LoginPage onClose={() => setShowLogin(false)} />}
-              </>
+            {isInitializing ? (
+              <div className="w-24 h-10 bg-gray-200 animate-pulse rounded-full"></div>
+            ) : !isLoggedIn ? (
+              <Link
+                href="/auth/login"
+                className="bg-eggPlant text-white py-2 px-6 sm:px-10 text-[18px] rounded-full transition-colors"
+              >
+                Login
+              </Link>
             ) : (
               <div className="space-y-4">
                 <div className="flex justify-around">
@@ -349,8 +412,11 @@ export function Navbar() {
                   }`}
                 >
                   <ul className="bg-gray-50 rounded-md p-2">
-                    <li className="py-2 px-4 cursor-pointer hover:bg-gray-100 transition-colors text-center">
-                      Logout
+                    <li
+                      className="py-2 px-4 cursor-pointer hover:bg-gray-100 transition-colors text-center"
+                      onClick={handleLogout}
+                    >
+                      {isLoading ? "Logging out..." : "Logout"}
                     </li>
                   </ul>
                 </div>

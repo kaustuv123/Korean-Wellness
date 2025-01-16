@@ -1,60 +1,135 @@
 import { connect } from "../../../dbConfig/dbConfig";
 import User from "../../../models/userModel.js";
 import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs";
-// import { sendEmail } from "@/helpers/mailer";
+import jwt from "jsonwebtoken";
 
+// Utility function to generate OTP
+function generateOTP() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+// First endpoint to initiate signup and send OTP
 export async function POST(request: NextRequest) {
   try {
     await connect();
     const reqBody = await request.json();
-    const { firstName, lastName, contactNo, email, password } = reqBody;
+    const { firstName, lastName, contactNo, email } = reqBody;
 
     console.log("req body ", reqBody);
 
-    //check if user already exists
+    // Check if user already exists
     const user = await User.findOne({ email });
 
-    if (user) {
+    if (user && user.isVerified) {
       return NextResponse.json(
         { error: "User already exists" },
         { status: 400 }
       );
     }
 
-    console.log("user existence checked");
-    //hash password
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    // Generate OTP
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // OTP valid for 5 minutes
 
-    const newUser = new User({
-      firstName,
-      lastName,
-      contactNo,
-      email,
-      password: hashedPassword,
-    });
-
-    console.log("new user ", newUser);
-
-    try {
-      const savedUser = await newUser.save();
-      console.log("saved user ", savedUser);
-
-      return NextResponse.json({
-        message: "User created successfully",
-        success: true,
-        savedUser,
+    if (user) {
+      // Update existing unverified user
+      user.firstName = firstName;
+      user.lastName = lastName;
+      user.contactNo = contactNo;
+      user.otp = otp;
+      user.otpExpiry = otpExpiry;
+      await user.save();
+    } else {
+      // Create new user with OTP
+      const newUser = new User({
+        firstName,
+        lastName,
+        contactNo,
+        email,
+        otp,
+        otpExpiry,
+        isVerified: false,
       });
-    } catch (saveError: any) {
-      console.error("Save error:", saveError);
-      return NextResponse.json({ error: saveError.message }, { status: 500 });
+
+      await newUser.save();
     }
 
-    //send verification email
+    // TODO: Implement email sending logic
+    // In production, you should use a proper email service
+    console.log("OTP for testing:", otp);
 
-    // await sendEmail({email, emailType: "VERIFY", userId: savedUser._id})
+    return NextResponse.json({
+      message: "OTP sent successfully",
+      success: true,
+    });
   } catch (error: any) {
+    console.error("Signup error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// Second endpoint to verify OTP and complete signup
+export async function PUT(request: NextRequest) {
+  try {
+    await connect();
+    const reqBody = await request.json();
+    const { email, otp } = reqBody;
+
+    const user = await User.findOne({
+      email,
+      otpExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found or OTP expired" },
+        { status: 400 }
+      );
+    }
+
+    if (user.otp !== otp) {
+      return NextResponse.json({ error: "Invalid OTP" }, { status: 400 });
+    }
+
+    // Mark user as verified
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save();
+
+    // Create token data
+    const tokenData = {
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+
+    // Create token
+    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
+      expiresIn: "1d",
+    });
+
+    // Create response with token in cookie
+    const response = NextResponse.json({
+      message: "Signup completed successfully",
+      success: true,
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        contactNo: user.contactNo,
+      },
+    });
+
+    response.cookies.set("jsonToken", token, {
+      httpOnly: true,
+    });
+
+    return response;
+  } catch (error: any) {
+    console.error("OTP verification error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
