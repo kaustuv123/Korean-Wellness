@@ -132,7 +132,7 @@ export default function SignupForm() {
         toast.success("Account created successfully!");
         setTimeout(() => {
           router.push("/");
-        }, 300);
+        }, 30);
       }
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || "Signup failed";

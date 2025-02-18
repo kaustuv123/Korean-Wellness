@@ -2,6 +2,7 @@ import { connect } from "../../../dbConfig/dbConfig";
 import User from "../../../models/userModel.js";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "@/helpers/mailer";
 
 // Utility function to generate OTP
 function generateOTP() {
@@ -35,6 +36,10 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     // TODO: Implement email sending logic
+    console.log("sending mail");
+
+    await sendEmail({ email, otp });
+
     // In production, you should use a proper email service
     console.log("Login OTP for testing:", otp);
 

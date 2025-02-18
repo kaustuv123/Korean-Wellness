@@ -2,6 +2,8 @@ import { connect } from "../../../dbConfig/dbConfig";
 import User from "../../../models/userModel.js";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "@/helpers/mailer";
+
 
 // Utility function to generate OTP
 function generateOTP() {
@@ -55,6 +57,9 @@ export async function POST(request: NextRequest) {
     }
 
     // TODO: Implement email sending logic
+    await sendEmail({ email, otp });
+
+        
     // In production, you should use a proper email service
     console.log("OTP for testing:", otp);
 
@@ -66,8 +71,8 @@ export async function POST(request: NextRequest) {
     console.error("Signup error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
 
+}
 // Second endpoint to verify OTP and complete signup
 export async function PUT(request: NextRequest) {
   try {
@@ -133,3 +138,4 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
