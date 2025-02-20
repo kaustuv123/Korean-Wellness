@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import ProductCard from './ProductCard';
+import ProductCard from '../ProductCard';
 
 // Define interface for the product data structure
 interface Product {
@@ -29,7 +29,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 299,
     discountedPrice: 284,
-    image: "/image/kyren1.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -49,7 +49,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/kyren1.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -69,7 +69,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/kyren1.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -89,7 +89,7 @@ const products: Product[] = [
     rating: 4,
     originalPrice: 549,
     discountedPrice: 521,
-    image: "/image/kyren1.jpeg",
+    image: "/image/kyren2.jpeg",
     discount: 5
   },
   {
@@ -104,7 +104,7 @@ const products: Product[] = [
   }
 ];
 
-const BestSeller: React.FC<ProductShowcaseProps> = ({ className }) => {
+const NewLaunches: React.FC<ProductShowcaseProps> = ({ className }) => {
     // Refs and state management
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -193,10 +193,10 @@ const BestSeller: React.FC<ProductShowcaseProps> = ({ className }) => {
     // };
   
     return (
-        <div className={`relative w-full max-w-[1400px] mx-auto px-4 md:px-6 ${className || ''} pb-5`}>
-          <h2 className='text-2xl font-bold mb-6 my-16'>
-              Best Seller
-          </h2>
+        <div className={`relative w-full max-w-[1400px] mx-auto px-4 md:px-6 ${className || ''} pb-`}>
+          <div className='text-2xl font-bold mb-6 my-16'>
+              New Launches
+          </div>
           {/* Navigation buttons remain the same... */}
           {showLeftButton && (
             <button
@@ -221,7 +221,7 @@ const BestSeller: React.FC<ProductShowcaseProps> = ({ className }) => {
           {/* Product Container */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-20"
             style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
             onMouseDown={handleDragStart}
             onMouseMove={handleDragMove}
@@ -244,4 +244,4 @@ const BestSeller: React.FC<ProductShowcaseProps> = ({ className }) => {
       );
   };
   
-  export default BestSeller;
+  export default NewLaunches;

@@ -1,11 +1,11 @@
 // import Image from "next/image";
 
-import BestSeller from "@/components/BestSeller";
-import Carousel from "@/components/Carousel";
-import NewLaunches from "@/components/NewLaunches";
-import ReviewCarousel from "@/components/ReviewCarousel";
-import ShopByCategory from "@/components/ShopByCategory";
-import ShopByConcern from "@/components/ShopByConcerns";
+import BestSeller from "@/components/homeComponents/BestSeller";
+import Carousel from "@/components/homeComponents/Carousel";
+import NewLaunches from "@/components/homeComponents/NewLaunches";
+import ReviewCarousel from "@/components/homeComponents/ReviewCarousel";
+import ShopByCategory from "@/components/homeComponents/ShopByCategory";
+import ShopByConcern from "@/components/homeComponents/ShopByConcerns";
 
 
 export default async function Home() {
