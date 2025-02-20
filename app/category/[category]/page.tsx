@@ -70,7 +70,7 @@ export default function CategoryPage({
           >
             <div className="flex flex-col md:flex-row">
               <div className="md:w-1/4 relative aspect-square">
-                <Link href={`/product/${product.slug}`}>
+                <Link href={`/products/${product.slug}`}>
                   <Image
                     src={product.images[0]}
                     alt={product.name}
@@ -81,7 +81,7 @@ export default function CategoryPage({
               </div>
               <div className="md:w-3/4 p-6">
                 <Link
-                  href={`/product/${product.slug}`}
+                  href={`/products/${product.slug}`}
                   className="text-xl font-semibold hover:text-blue-600"
                 >
                   {product.name}

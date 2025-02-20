@@ -1,29 +1,70 @@
 // app/product/[slug]/page.tsx
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Image from "next/image";
+import axios from "axios";
 import { Product } from "@/src/types/product";
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
+export default function ProductPage({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}) {
+  const resolvedParams = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`/api/products/${params.slug}`);
-        const data = await response.json();
-        setProduct(data);
-      } catch (error) {
-        console.error("Failed to fetch product:", error);
+        setLoading(true);
+        const response = await axios.get(`/api/products/${resolvedParams.slug}`);
+        setProduct(response.data.data);
+      } catch (err: any) {
+        setError(err.response?.data?.error || "Failed to fetch product");
+        console.error("Failed to fetch product:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [params.slug]);
+  }, [resolvedParams.slug]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse bg-white rounded-lg shadow-lg p-8">
+          <div className="md:flex">
+            <div className="md:w-1/2">
+              <div className="aspect-square bg-gray-200 rounded-lg"></div>
+            </div>
+            <div className="md:w-1/2 md:pl-8 mt-6 md:mt-0">
+              <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/4 mb-6"></div>
+              <div className="h-24 bg-gray-200 rounded mb-6"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-600">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   const addToCart = () => {

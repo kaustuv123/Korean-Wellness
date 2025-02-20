@@ -2,11 +2,21 @@ import { connect } from "../../../dbConfig/dbConfig";
 import Product from "../../../models/productModel";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
   try {
     await connect();
+
+    // Get slug from context
+    await connect();
+
+    const product = await Product.findOne({
+      slug: decodeURIComponent(params.slug),
+    }).lean();
+
     
-    const product = await Product.findOne({ slug: params.slug });
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
