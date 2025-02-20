@@ -2,11 +2,11 @@
 // import { Geist, Geist_Mono, Quicksand } from "next/font/google";
 import { Quicksand } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/Footer";
+import Footer from "@/components/footer/Footer";
 import { Suspense } from "react";
-import { NavbarLoading } from "@/components/NavbarLoading";
-import { FooterLoading } from "@/components/FooterLoading";
-import { NavbarContainer } from "@/components/NavbarContainer";
+import { NavbarLoading } from "@/components/navbar/NavbarLoading";
+import { FooterLoading } from "@/components/footer/FooterLoading";
+import { NavbarContainer } from "@/components/navbar/NavbarContainer";
 import { Toaster } from "react-hot-toast";
 
 // const geistSans = Geist({
