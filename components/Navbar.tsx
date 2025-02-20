@@ -8,7 +8,6 @@ import Link from "next/link";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 
 export function Navbar() {
   const router = useRouter();
