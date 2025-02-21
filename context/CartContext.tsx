@@ -13,7 +13,6 @@ interface CartContextType {
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
 }
@@ -51,12 +50,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
 
       if (existingItemIndex >= 0) {
-        // Product already in cart, increase quantity
+        // Product already in cart, update quantity
         const updatedItems = [...prevItems];
         const newQuantity = Math.min(
           updatedItems[existingItemIndex].quantity + 1,
           product.stock
         );
+
+        if (newQuantity <= 0) {
+          // Remove item if new quantity is 0 or negative
+          return updatedItems.filter((_, index) => index !== existingItemIndex);
+        }
+
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
           quantity: newQuantity,
@@ -93,9 +98,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  const clearCart = () => {
-    setItems([]);
-  };
 
   const getTotalItems = () => {
     return items.reduce((total, item) => total + item.quantity, 0);
@@ -116,7 +118,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addToCart,
         removeFromCart,
         updateQuantity,
-        clearCart,
         getTotalItems,
         getTotalPrice,
       }}

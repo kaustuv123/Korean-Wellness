@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { categoryService } from "../../utils/api";
+import { categoryService } from "../../utils/productService";
 
 interface Category {
   name: string;

@@ -36,6 +36,31 @@ export default function ProductPage({
 
     fetchProduct();
   }, [resolvedParams.slug]);
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+      toast.success(`${product.name} added to cart!`, {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleIncreaseQuantity = () => {
+    if (product && cartQuantity < product.stock) {
+      updateQuantity(product.productId, cartQuantity + 1);
+      toast.success(`Added another ${product.name} to cart`, {
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+    }
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (product && cartQuantity > 0) {
+      updateQuantity(product.productId, cartQuantity - 1);
+    }
+  };
 
   // Check if product is already in cart
   const isInCart = product && items.some(item => item.product.productId === product.productId);
@@ -73,34 +98,20 @@ export default function ProductPage({
   }
 
   if (!product) {
-    return null;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Not Found</h2>
+          <p className="text-gray-600 mb-6">
+            We're sorry, but the product you're looking for does not exist or is no longer available.
+          </p>
+          <a href="/products" className="text-blue-600 hover:underline">
+            Browse other products
+          </a>
+        </div>
+      </div>
+    );
   }
-
-  const handleAddToCart = () => {
-    if (product) {
-      addToCart(product);
-      toast.success(`${product.name} added to cart!`, {
-        position: "bottom-right",
-        autoClose: 3000,
-      });
-    }
-  };
-
-  const handleIncreaseQuantity = () => {
-    if (product && cartQuantity < product.stock) {
-      updateQuantity(product.productId, cartQuantity + 1);
-      toast.success(`Added another ${product.name} to cart`, {
-        position: "bottom-right",
-        autoClose: 2000,
-      });
-    }
-  };
-
-  const handleDecreaseQuantity = () => {
-    if (product && cartQuantity > 0) {
-      updateQuantity(product.productId, cartQuantity - 1);
-    }
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -168,7 +179,7 @@ export default function ProductPage({
             </div>
             <p className="text-gray-600 mb-6">{product.description}</p>
 
-            {/* Stock Status */}
+            {/* Stock Status
             <div className="mb-6">
               <p
                 className={`font-semibold ${
@@ -179,7 +190,7 @@ export default function ProductPage({
                   ? `In Stock (${product.stock} available)`
                   : "Out of Stock"}
               </p>
-            </div>
+            </div> */}
 
             {/* Attributes */}
             {Object.entries(product.attributes).length > 0 && (

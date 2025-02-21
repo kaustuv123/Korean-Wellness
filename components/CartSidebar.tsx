@@ -12,7 +12,7 @@ interface CartSidebarProps {
 }
 
 const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
-  const { items, removeFromCart, updateQuantity, getTotalPrice, clearCart } =
+  const { items, removeFromCart, updateQuantity, getTotalPrice } =
     useCart();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -89,7 +89,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
         className={`fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-xl transform transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ willChange: "transform" }}
+        style={{ willChange: "transform", zIndex: 200 }}
       >
         <div className="flex flex-col h-full">
           {/* Cart Header */}
@@ -210,13 +210,13 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                 <span className="font-medium">Subtotal</span>
                 <span className="font-bold">${getTotalPrice().toFixed(2)}</span>
               </div>
-
+{/* 
               <button
                 onClick={() => clearCart()}
                 className="w-full mb-2 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200"
               >
                 Clear Cart
-              </button>
+              </button> */}
 
               <Link
                 href="/checkout"
