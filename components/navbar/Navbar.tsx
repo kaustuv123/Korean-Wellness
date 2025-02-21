@@ -1,25 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaCartShopping, FaUser } from "react-icons/fa6";
+import { FaUser } from "react-icons/fa6";
 import { Menu, X, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { userService } from "@/utils/userService";
 
 export function Navbar() {
   const router = useRouter();
   const [isInitializing, setIsInitializing] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await axios.get("/api/users/userData");
-        if (response.data.success) {
+        const data = await userService.getUserData();
+        if (data.success) {
           setIsLoggedIn(true);
           localStorage.setItem("isLoggedIn", "true");
         } else {
@@ -33,6 +34,8 @@ export function Navbar() {
         setIsInitializing(false);
       }
     };
+    // console.log("isLoggedIn", isLoggedIn);
+    
 
     checkLoginStatus();
 
@@ -47,12 +50,16 @@ export function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    console.log("isLoggedIn", isLoggedIn);
+  }, [isLoggedIn]);
+
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("/api/users/logout");
+      const data = await userService.logout();
 
-      if (response.data.success) {
+      if (data.success) {
         setIsLoggedIn(false);
         localStorage.removeItem("isLoggedIn");
         toast.success("Logged out successfully");
@@ -150,6 +157,10 @@ export function Navbar() {
     { id: 4, name: "Body Lotion", image: "/image/kyren2.jpeg" },
     { id: 5, name: "Hand Wash", image: "/image/kyren2.jpeg" },
   ];
+
+  // const toggleSidebar = () => {
+  //   setIsSidebarOpen(!isSidebarOpen);
+  // };
 
   return (
     <nav className="relative">
@@ -308,7 +319,6 @@ export function Navbar() {
             </Link>
           ) : (
             <div className="flex items-center gap-8">
-              <FaCartShopping className="text-2xl cursor-pointer hover:text-gray-600 transition-colors" />
               <div className="relative group inline-block">
                 <div className="inline-flex items-center">
                   <FaUser className="text-2xl cursor-pointer hover:text-gray-600 transition-colors" />
@@ -389,7 +399,6 @@ export function Navbar() {
             ) : (
               <div className="space-y-4">
                 <div className="flex justify-around">
-                  <FaCartShopping className="text-2xl cursor-pointer hover:text-gray-600 transition-colors" />
                   <button
                     onClick={toggleMobileUser}
                     className="flex items-center gap-2 hover:text-gray-600 transition-colors"
@@ -546,6 +555,14 @@ export function Navbar() {
           />
         )}
       </div>
+
+      {/* Cart Sidebar */}
+      {/* <CartSidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+      /> */}
+
+
     </nav>
   );
 }

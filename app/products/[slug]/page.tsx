@@ -4,6 +4,9 @@ import { useEffect, useState, use } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { Product } from "@/src/types/product";
+import { useCart } from "@/context/CartContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProductPage({ 
   params 
@@ -15,6 +18,7 @@ export default function ProductPage({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { addToCart, updateQuantity, items } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -32,6 +36,36 @@ export default function ProductPage({
 
     fetchProduct();
   }, [resolvedParams.slug]);
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+      toast.success(`${product.name} added to cart!`, {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleIncreaseQuantity = () => {
+    if (product && cartQuantity < product.stock) {
+      updateQuantity(product.productId, cartQuantity + 1);
+      toast.success(`Added another ${product.name} to cart`, {
+        position: "bottom-right",
+        autoClose: 2000,
+      });
+    }
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (product && cartQuantity > 0) {
+      updateQuantity(product.productId, cartQuantity - 1);
+    }
+  };
+
+  // Check if product is already in cart
+  const isInCart = product && items.some(item => item.product.productId === product.productId);
+  const itemInCart = product ? items.find(item => item.product.productId === product.productId) : null;
+  const cartQuantity = itemInCart?.quantity || 0;
 
   if (loading) {
     return (
@@ -64,16 +98,24 @@ export default function ProductPage({
   }
 
   if (!product) {
-    return null;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Not Found</h2>
+          <p className="text-gray-600 mb-6">
+            We're sorry, but the product you're looking for does not exist or is no longer available.
+          </p>
+          <a href="/products" className="text-blue-600 hover:underline">
+            Browse other products
+          </a>
+        </div>
+      </div>
+    );
   }
-
-  const addToCart = () => {
-    // Implement your add to cart logic here
-    console.log("Adding to cart:", product.productId);
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <ToastContainer />
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="md:flex">
           {/* Image Slider */}
@@ -137,7 +179,7 @@ export default function ProductPage({
             </div>
             <p className="text-gray-600 mb-6">{product.description}</p>
 
-            {/* Stock Status */}
+            {/* Stock Status
             <div className="mb-6">
               <p
                 className={`font-semibold ${
@@ -148,7 +190,7 @@ export default function ProductPage({
                   ? `In Stock (${product.stock} available)`
                   : "Out of Stock"}
               </p>
-            </div>
+            </div> */}
 
             {/* Attributes */}
             {Object.entries(product.attributes).length > 0 && (
@@ -167,18 +209,59 @@ export default function ProductPage({
               </div>
             )}
 
-            {/* Add to Cart Button */}
-            <button
-              onClick={addToCart}
-              disabled={product.stock === 0}
-              className={`w-full py-3 px-6 rounded-lg text-white font-semibold ${
-                product.stock > 0
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
-            >
-              {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
-            </button>
+            {/* Cart Controls */}
+            {product.stock > 0 && (
+              <div className="mb-6">
+                {!isInCart ? (
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full py-3 px-6 rounded-lg text-white font-semibold bg-blue-600 hover:bg-blue-700"
+                  >
+                    Add to Cart
+                  </button>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <button 
+                      onClick={handleDecreaseQuantity}
+                      className="px-4 py-3 border border-gray-300 rounded-l-lg bg-gray-100 hover:bg-gray-200 text-xl font-bold"
+                    >
+                      -
+                    </button>
+                    <span className="px-8 py-3 border-t border-b border-gray-300 bg-white font-semibold text-lg">
+                      {cartQuantity}
+                    </span>
+                    <button 
+                      onClick={handleIncreaseQuantity}
+                      disabled={cartQuantity >= product.stock}
+                      className={`px-4 py-3 border border-gray-300 rounded-r-lg text-xl font-bold ${
+                        cartQuantity >= product.stock 
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
+                        : "bg-gray-100 hover:bg-gray-200"
+                      }`}
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Out of Stock Button */}
+            {product.stock === 0 && (
+              <button
+                disabled
+                className="w-full py-3 px-6 rounded-lg text-white font-semibold bg-gray-400 cursor-not-allowed"
+              >
+                Out of Stock
+              </button>
+            )}
+
+            {/* Show current cart status for this item */}
+            {isInCart && (
+              <p className="mt-3 text-sm text-gray-600 text-center">
+                {cartQuantity} {cartQuantity === 1 ? 'item' : 'items'} in your cart
+              </p>
+            )}
           </div>
         </div>
       </div>
