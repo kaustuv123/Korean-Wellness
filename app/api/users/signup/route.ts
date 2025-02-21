@@ -1,5 +1,5 @@
-import { connect } from "../../../dbConfig/dbConfig";
-import User from "../../../models/userModel.js";
+import { connect } from "@/dbConfig/dbConfig";
+import User from "@/models/userModel.js";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/helpers/mailer";

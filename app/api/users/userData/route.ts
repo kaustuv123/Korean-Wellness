@@ -1,8 +1,8 @@
 // app/api/users/userData/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { connect } from "../../../dbConfig/dbConfig";
-import User from "../../../models/userModel.js";
+import { connect } from "@/dbConfig/dbConfig";
+import User from "@/models/userModel.js";
 import { getUserFromToken } from "@/helpers/getUserFromToken";
 
 export async function GET(request: NextRequest) {
