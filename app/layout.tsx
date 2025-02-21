@@ -8,6 +8,8 @@ import { NavbarLoading } from "@/components/navbar/NavbarLoading";
 import { FooterLoading } from "@/components/footer/FooterLoading";
 import { NavbarContainer } from "@/components/navbar/NavbarContainer";
 import { Toaster } from "react-hot-toast";
+import { CartProvider } from "@/context/CartContext";
+import CartHeader from "@/components/CartHeader";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -36,14 +38,19 @@ export default function RootLayout({
       <body
         className={`${quickSand.variable} ${quickSand.variable} antialiased`}
       >
-        <Suspense fallback={<NavbarLoading />}>
-          <NavbarContainer />
-        </Suspense>
-        {children}
-        <Suspense fallback={<FooterLoading />}>
-          <Footer />
-        </Suspense>
-        <Toaster position="top-center" />
+        <CartProvider>
+       
+        <CartHeader />
+       
+          <Suspense fallback={<NavbarLoading />}>
+            <NavbarContainer />
+          </Suspense>
+          <main className="flex-grow">{children}</main>
+          <Suspense fallback={<FooterLoading />}>
+            <Footer />
+          </Suspense>
+          <Toaster position="top-center" />
+        </CartProvider>
       </body>
     </html>
   );
