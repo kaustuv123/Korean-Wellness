@@ -39,9 +39,8 @@ export default function RootLayout({
         className={`${quickSand.variable} ${quickSand.variable} antialiased`}
       >
         <CartProvider>
-       
-        <CartHeader />
-       
+          <CartHeader />
+
           <Suspense fallback={<NavbarLoading />}>
             <NavbarContainer />
           </Suspense>
