@@ -1,7 +1,6 @@
-
 import { getServerSession } from 'next-auth';
-import { connect } from "../../../dbConfig/dbConfig";
-import User from "../../../models/userModel.js";
+import { connect } from "@/dbConfig/dbConfig";
+import User from "@/models/userModel.js";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -37,7 +36,6 @@ export async function GET(req: Request) {
       await connect();
       const body = await req.json();
   
-      // If this is the first address, set it as default
       const user = await User.findOne({ email: session.user.email });
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -49,7 +47,6 @@ export async function GET(req: Request) {
         isDefault: isFirstAddress ? true : body.isDefault || false,
       };
   
-      // If new address is default, remove default from other addresses
       if (newAddress.isDefault) {
         user.addresses.forEach((addr: any) => {
           addr.isDefault = false;

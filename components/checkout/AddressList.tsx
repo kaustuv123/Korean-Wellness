@@ -1,4 +1,4 @@
-import { Address } from '@/src/types/user';
+import { Address } from '@/src/types/address';
 import { Trash2, Edit2, Star } from 'lucide-react';
 
 interface AddressListProps {

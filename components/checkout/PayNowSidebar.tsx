@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { ShoppingBag } from 'lucide-react';
-import { Address } from '@/src/types/user';
+import { Address } from '@/src/types/address';
 
 interface PayNowSidebarProps {
   selectedAddress: number | null;

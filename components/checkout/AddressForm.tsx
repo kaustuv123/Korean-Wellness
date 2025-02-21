@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Address } from '@/src/types/user';
+import { Address } from '@/src/types/address';
 
 interface AddressFormProps {
   initialData?: Partial<Address>;

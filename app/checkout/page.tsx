@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import AddressList from "@/components/checkout/AddressList";
 import AddressForm from "@/components/checkout/AddressForm";
 import PayNowSidebar from "@/components/checkout/PayNowSidebar";
-import { Address } from "@/src/types/user";
+import { Address } from "@/src/types/address";
+import { addressService } from "@/utils/addressService";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -24,7 +25,6 @@ export default function CheckoutPage() {
         // Check if user exists in cookies
         const response = await axios.get("/api/users/userData");
         
-
         if (!response) {
           console.log("No user found, redirecting to login");
           router.push("/auth/login?redirect=/checkout");
@@ -46,21 +46,22 @@ export default function CheckoutPage() {
 
   const fetchAddresses = async () => {
     try {
-      const response = await axios.get("/api/user/addresses");
-      setAddresses(response.data.addresses);
-      setShowAddressForm(response.data.addresses.length === 0);
+      const addresses = await addressService.getAddresses();
+      setAddresses(addresses);
+      setShowAddressForm(addresses.length === 0);
 
       // Select default address if exists
-      const defaultIndex = response.data.addresses.findIndex(
+      const defaultIndex = addresses.findIndex(
         (addr: Address) => addr.isDefault
       );
       if (defaultIndex !== -1) {
         setSelectedAddress(defaultIndex);
       }
     } catch (error) {
-      console.error("Error fetching addresses:", error);
+      const axiosError = error as AxiosError;
+      console.error("Error fetching addresses:", axiosError);
       // Only redirect on unauthorized errors, handle other errors differently
-      if (error.response?.status === 401) {
+      if (axiosError.response?.status === 401) {
         router.push("/auth/login?redirect=/checkout");
       }
     }
@@ -72,14 +73,11 @@ export default function CheckoutPage() {
     try {
       if (editingAddress) {
         // Update existing address
-        await axios.put(
-          `/api/user/addresses/${editingAddress.index}`,
-          addressData
-        );
+        await addressService.updateAddress(editingAddress.index, addressData);
         setEditingAddress(null);
       } else {
         // Add new address
-        await axios.post("/api/user/addresses", addressData);
+        await addressService.addAddress(addressData);
         setShowAddressForm(false);
       }
       await fetchAddresses();
@@ -91,7 +89,7 @@ export default function CheckoutPage() {
   const handleSetDefault = async (index: number) => {
     try {
       const addressToUpdate = { ...addresses[index], isDefault: true };
-      await axios.put(`/api/user/addresses/${index}`, addressToUpdate);
+      await addressService.updateAddress(index, addressToUpdate);
       await fetchAddresses();
     } catch (error) {
       console.error("Error setting default address:", error);
@@ -100,7 +98,7 @@ export default function CheckoutPage() {
 
   const handleAddressDelete = async (index: number) => {
     try {
-      await axios.delete(`/api/user/addresses/${index}`);
+      await addressService.deleteAddress(index);
       await fetchAddresses();
       if (selectedAddress === index) {
         setSelectedAddress(null);
