@@ -2,17 +2,46 @@ import mongoose from "mongoose";
 
 const addressSchema = new mongoose.Schema(
   {
-    street: String,
-    city: String,
-    state: String,
-    postalCode: String,
-    country: String,
+    firstName: {
+      type: String,
+      required: [true, "First name is required"],
+    },
+    lastName: {
+      type: String,
+      required: [true, "Last name is required"],
+    },
+    phoneNumber: {
+      type: String,
+      required: [true, "Phone number is required"],
+    },
+    email: String,
+    alternatePhoneNumber: String,
+    street: {
+      type: String,
+      required: [true, "Street address is required"],
+    },
+    city: {
+      type: String,
+      required: [true, "City is required"],
+    },
+    state: {
+      type: String,
+      required: [true, "State is required"],
+    },
+    postalCode: {
+      type: String,
+      required: [true, "Postal code is required"],
+    },
+    country: {
+      type: String,
+      required: [true, "Country is required"],
+    },
     isDefault: {
       type: Boolean,
-      default: false, // Mark one address as default
+      default: false,
     },
   },
-  { _id: false } // Prevents Mongoose from creating an unnecessary `_id` for each address
+  { _id: false }
 );
 
 const userSchema = new mongoose.Schema(

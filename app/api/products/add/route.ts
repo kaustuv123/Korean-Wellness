@@ -1,5 +1,5 @@
-import { connect } from "../../../dbConfig/dbConfig";
-import Product from "../../../models/productModel.js";
+import { connect } from "@/dbConfig/dbConfig";
+import Product from "@/models/productModel";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {

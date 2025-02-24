@@ -20,7 +20,7 @@ export const addressService = {
   },
 
   addAddress: async (addressData: Omit<Address, "_id">) => {
-    try {
+    try {      
       const { data } = await api.post('/users/addresses', addressData);
       return data;
     } catch (error) {

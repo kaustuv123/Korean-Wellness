@@ -1,8 +1,16 @@
 export interface Address {
-  street: string; // Street address
-  city: string;   // City name
-  state: string;  // State or region
-  country: string; // Country name
-  postalCode: string; // Postal or ZIP code
-  isDefault?: boolean; // Optional flag to indicate if this is the default address
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  email?: string;
+  alternatePhoneNumber?: string;
+  flat?: string;
+  area?: string;
+  landmark?: string;
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  isDefault: boolean;
 }

@@ -69,20 +69,24 @@ export default function CheckoutPage() {
 
   console.log("address", addresses);
 
-  const handleAddressSubmit = async (addressData: Omit<Address, "_id">) => {
+  const handleAddressSubmit = async (addressData: Address) => {
     try {
+      console.log('Submitting address data:', addressData);
+      
       if (editingAddress) {
-        // Update existing address
+        // Update existing address using addressService
         await addressService.updateAddress(editingAddress.index, addressData);
-        setEditingAddress(null);
       } else {
-        // Add new address
+        // Add new address using addressService
         await addressService.addAddress(addressData);
-        setShowAddressForm(false);
       }
+
+      // Refresh addresses after successful submission
       await fetchAddresses();
+      setShowAddressForm(false);
+      setEditingAddress(null);
     } catch (error) {
-      console.error("Error saving address:", error);
+      console.error('Error submitting address:', error);
     }
   };
 

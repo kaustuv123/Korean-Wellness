@@ -36,6 +36,8 @@ export async function GET(req: NextRequest) {
   
       await connect();
       const body = await req.json();
+      console.log("addressData at backend", body);
+
   
       const user = await User.findById(userId);
       if (!user) {
@@ -47,6 +49,8 @@ export async function GET(req: NextRequest) {
         ...body,
         isDefault: isFirstAddress ? true : body.isDefault || false,
       };
+      console.log("newAddress", newAddress);
+      
   
       if (newAddress.isDefault) {
         user.addresses.forEach((addr: any) => {
