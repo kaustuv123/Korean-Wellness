@@ -1,6 +1,6 @@
 // context/CartContext.tsx
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { Product } from "@/src/types/product";
 
 interface CartItem {
@@ -15,6 +15,7 @@ interface CartContextType {
   updateQuantity: (productId: string, quantity: number) => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -98,7 +99,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-
   const getTotalItems = () => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
@@ -111,6 +111,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 0);
   };
 
+  const clearCart = useCallback(() => {
+    setItems([]);
+    localStorage.removeItem('cart');
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
@@ -120,6 +125,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateQuantity,
         getTotalItems,
         getTotalPrice,
+        clearCart,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState} from 'react';
 import { useCart } from '@/context/CartContext';
 import { ShoppingBag } from 'lucide-react';
 import { Address } from '@/src/types/address';
@@ -38,7 +38,7 @@ export default function PayNowSidebar({ selectedAddress, addresses }: PayNowSide
   };
 
   const handlePayment = async () => {
-    if (!selectedAddress || processing) return;
+    if (selectedAddress === null || processing) return;
 
     setProcessing(true);
     try {
@@ -56,7 +56,6 @@ export default function PayNowSidebar({ selectedAddress, addresses }: PayNowSide
 
       const data = await response.json();
       if (data.success) {
-        clearCart();
         // Redirect to success page
         window.location.href = `/order/success/${data.orderId}`;
       } else {
@@ -134,16 +133,16 @@ export default function PayNowSidebar({ selectedAddress, addresses }: PayNowSide
 
       <button
         onClick={handlePayment}
-        disabled={!selectedAddress || processing}
+        disabled={selectedAddress === null || processing}
         className={`w-full mt-6 py-3 rounded-lg font-semibold text-white ${
-          selectedAddress && !processing
+          selectedAddress !== null && !processing
             ? 'bg-blue-600 hover:bg-blue-700'
             : 'bg-gray-400 cursor-not-allowed'
         }`}
       >
         {processing 
           ? 'Processing...' 
-          : selectedAddress 
+          : selectedAddress !== null 
             ? 'Pay Now' 
             : 'Select Address to Continue'}
       </button>

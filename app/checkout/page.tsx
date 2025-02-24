@@ -124,7 +124,6 @@ export default function CheckoutPage() {
         {/* Left Section - Address Management */}
         <div className="lg:w-2/3">
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-6">Shipping Address</h2>
 
             {showAddressForm || editingAddress ? (
               <AddressForm
