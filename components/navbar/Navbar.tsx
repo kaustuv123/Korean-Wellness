@@ -35,7 +35,6 @@ export function Navbar() {
       }
     };
     // console.log("isLoggedIn", isLoggedIn);
-    
 
     checkLoginStatus();
 
@@ -151,11 +150,31 @@ export function Navbar() {
   };
 
   const products = [
-    { id: 1, name: "Shampoo", image: "/image/kyren2.jpeg" },
-    { id: 2, name: "Treatment", image: "/image/kyren2.jpeg" },
-    { id: 3, name: "Body Wash", image: "/image/kyren2.jpeg" },
-    { id: 4, name: "Body Lotion", image: "/image/kyren2.jpeg" },
-    { id: 5, name: "Hand Wash", image: "/image/kyren2.jpeg" },
+    { id: 1, name: "Shampoo", image: "/image/kyren2.jpeg", slug: "shampoos" },
+    {
+      id: 2,
+      name: "Treatment",
+      image: "/image/kyren2.jpeg",
+      slug: "treatments",
+    },
+    {
+      id: 3,
+      name: "Body Wash",
+      image: "/image/kyren2.jpeg",
+      slug: "bodywash",
+    },
+    {
+      id: 4,
+      name: "Body Lotion",
+      image: "/image/kyren2.jpeg",
+      slug: "bodylotions",
+    },
+    {
+      id: 5,
+      name: "Hand Wash",
+      image: "/image/kyren2.jpeg",
+      slug: "handwash",
+    },
   ];
 
   // const toggleSidebar = () => {
@@ -183,19 +202,19 @@ export function Navbar() {
         <div className="hidden md:flex justify-between gap-10 text-[20px]">
           <ul className="flex justify-between gap-10 ">
             <li className="group relative inline-block">
-              <Link href="/categories">
+              <div>
                 <p className="cursor-pointer pb-1 border-b-2 border-transparent hover:border-black">
                   Shop
                 </p>
-              </Link>
+              </div>
 
               <div className="invisible group-hover:visible absolute -translate-x-1/2 z-50 pt-4">
                 <div className="rounded-md shadow-lg bg-white">
                   <div className="flex px-10 py-10">
                     {products.map((product) => (
-                      // Each product card becomes its own group for hover effects
-                      <div
+                      <Link
                         key={product.id}
+                        href={`/category/${product.slug}`}
                         className="flex flex-col gap-5 items-center cursor-pointer group/product"
                       >
                         <div className="w-[200px] h-[200px] relative">
@@ -204,7 +223,6 @@ export function Navbar() {
                             width={200}
                             height={200}
                             alt={`${product.name} Image`}
-                            // Changed to group-hover with product modifier
                             className="w-auto h-[200px] object-cover group-hover/product:scale-105 transition duration-1000"
                           />
                         </div>
@@ -213,7 +231,7 @@ export function Navbar() {
                             {product.name}
                           </p>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -344,98 +362,6 @@ export function Navbar() {
         {/* Main mobile menu */}
         <div
           className={`fixed inset-0 bg-white transform transition-all duration-500 ease-in-out ${
-            isMenuOpen ? "translate-x-0 delay-100" : "-translate-x-full"
-          }`}
-          style={{ zIndex: 50 }}
-        >
-          <div className="flex justify-between items-center p-4 border-b">
-            <span className="text-lg font-medium">Menu</span>
-            <button
-              onClick={toggleMenu}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          <ul className="px-4 py-2">
-            <li className="py-2 border-b">
-              <button
-                onClick={toggleMobileShop}
-                className="flex items-center justify-between w-full hover:text-gray-600 transition-colors"
-              >
-                <span>Shop</span>
-                <ChevronRight size={20} />
-              </button>
-            </li>
-            <li className="py-2 border-b">
-              <button
-                onClick={openCategoryMenu}
-                className="flex items-center justify-between w-full hover:text-gray-600 transition-colors"
-              >
-                <span>Products</span>
-                <ChevronRight size={20} />
-              </button>
-            </li>
-            <li className="py-2 border-b hover:text-gray-600 transition-colors">
-              Blog
-            </li>
-            <li className="py-2 border-b hover:text-gray-600 transition-colors">
-              About
-            </li>
-          </ul>
-
-          {/* Mobile user controls */}
-          <div className="px-4 py-4 border-t">
-            {isInitializing ? (
-              <div className="w-24 h-10 bg-gray-200 animate-pulse rounded-full"></div>
-            ) : !isLoggedIn ? (
-              <Link
-                href="/auth/login"
-                className="bg-eggPlant text-white py-2 px-6 sm:px-10 text-[18px] rounded-full transition-colors"
-              >
-                Login
-              </Link>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex justify-around">
-                  <button
-                    onClick={toggleMobileUser}
-                    className="flex items-center gap-2 hover:text-gray-600 transition-colors"
-                  >
-                    <FaUser className="text-2xl" />
-                    <ChevronDown
-                      size={20}
-                      className={`transition-transform duration-200 ${
-                        isMobileUserOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                </div>
-                <div
-                  className={`overflow-hidden transition-all duration-200 ${
-                    isMobileUserOpen
-                      ? "max-h-24 opacity-100"
-                      : "max-h-0 opacity-0"
-                  }`}
-                >
-                  <ul className="bg-gray-50 rounded-md p-2">
-                    <li
-                      className="py-2 px-4 cursor-pointer hover:bg-gray-100 transition-colors text-center"
-                      onClick={handleLogout}
-                    >
-                      {isLoading ? "Logging out..." : "Logout"}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Shop submenu with enhanced transitions */}
-        <div
-          className={`fixed inset-0 bg-white transform transition-all duration-500 ease-in-out ${
             isMobileShopOpen ? "translate-x-0 delay-100" : "translate-x-full"
           }`}
           style={{ zIndex: 51 }}
@@ -453,8 +379,9 @@ export function Navbar() {
           <div className="h-[calc(100vh-64px)] overflow-y-auto">
             <div className="grid grid-cols-2 gap-4 p-4">
               {products.map((product) => (
-                <div
+                <Link
                   key={product.id}
+                  href={`/category/${product.slug}`}
                   className="flex flex-col items-center gap-2"
                 >
                   <div className="relative w-full aspect-square">
@@ -468,7 +395,7 @@ export function Navbar() {
                   <p className="text-center py-2 hover:text-gray-600 transition-colors">
                     {product.name}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -561,8 +488,6 @@ export function Navbar() {
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
       /> */}
-
-
     </nav>
   );
 }

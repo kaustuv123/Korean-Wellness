@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
-import productData from "../app/data/productData"; // Ensure you have this file
+import productData from "../data/productData"; // Ensure you have this file
 
 export default function ProductAddition() {
   const [loading, setLoading] = useState(false);
