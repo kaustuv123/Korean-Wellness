@@ -7,6 +7,7 @@ import NewLaunches from "@/components/homeComponents/NewLaunches";
 import ReviewCarousel from "@/components/homeComponents/ReviewCarousel";
 // import ShopByCategory from "@/components/homeComponents/ShopByCategory";
 import ShopByConcern from "@/components/homeComponents/ShopByConcerns";
+import RecentProducts from "@/components/homeComponents/RecentProducts";
 
 export default async function Home() {
   // await new Promise((r) => setTimeout(r, 5000));
@@ -16,7 +17,8 @@ export default async function Home() {
       <BestSeller />
       <CategorySection />
       <ShopByConcern />
-      <NewLaunches />
+      <RecentProducts />
+      {/* <NewLaunches /> */}
       <ReviewCarousel />
     </div>
   );

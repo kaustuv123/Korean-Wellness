@@ -1,247 +1,237 @@
-'use client'
+// components/BestsellerProducts.tsx
+"use client";
+import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useCart } from "@/context/CartContext";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Product } from "@/src/types/product";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import ProductCard from '../ProductCard';
+export default function BestsellerProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { addToCart, updateQuantity, items } = useCart();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
 
-// Define interface for the product data structure
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  rating: number;
-  originalPrice: number;
-  discountedPrice: number;
-  image: string;
-  discount: number;
-}
-
-interface ProductShowcaseProps {
-  className?: string;
-}
-
-// Sample product data with proper typing
-const products: Product[] = [
-  {
-    id: 1,
-    name: 'Salicylic Acid + LHA 2% Cleanser',
-    category: 'Acne, Breakouts & Oiliness',
-    rating: 4,
-    originalPrice: 299,
-    discountedPrice: 284,
-    image: "/image/kyren1.jpeg",
-    discount: 5
-  },
-  {
-    id: 2,
-    name: 'SPF 50 Sunscreen',
-    category: 'Sun protection, UV exposure / damage',
-    rating: 4,
-    originalPrice: 399,
-    discountedPrice: 379,
-    image: "/image/kyren3.jpeg",
-    discount: 5
-  },
-  {
-    id: 3,
-    name: 'Salicylic Acid 2% Face Serum',
-    category: 'Acne, Oily Skin, Blackheads & Irritation',
-    rating: 4,
-    originalPrice: 549,
-    discountedPrice: 521,
-    image: "/image/kyren1.jpeg",
-    discount: 5
-  },
-  {
-    id: 4,
-    name: 'Salicylic Acid 2% Face Serum',
-    category: 'Acne, Oily Skin, Blackheads & Irritation',
-    rating: 4,
-    originalPrice: 549,
-    discountedPrice: 521,
-    image: "/image/kyren3.jpeg",
-    discount: 5
-  },
-  {
-    id: 5,
-    name: 'Salicylic Acid 2% Face Serum',
-    category: 'Acne, Oily Skin, Blackheads & Irritation',
-    rating: 4,
-    originalPrice: 549,
-    discountedPrice: 521,
-    image: "/image/kyren1.jpeg",
-    discount: 5
-  },
-  {
-    id: 6,
-    name: 'Salicylic Acid 2% Face Serum',
-    category: 'Acne, Oily Skin, Blackheads & Irritation',
-    rating: 4,
-    originalPrice: 549,
-    discountedPrice: 521,
-    image: "/image/kyren3.jpeg",
-    discount: 5
-  },
-  {
-    id: 7,
-    name: 'Salicylic Acid 2% Face Serum',
-    category: 'Acne, Oily Skin, Blackheads & Irritation',
-    rating: 4,
-    originalPrice: 549,
-    discountedPrice: 521,
-    image: "/image/kyren1.jpeg",
-    discount: 5
-  },
-  {
-    id: 8,
-    name: 'Vitamin C 10% Face Serum',
-    category: 'Dullness, Spots & Loss of Elasticity',
-    rating: 4,
-    originalPrice: 699,
-    discountedPrice: 664,
-    image: "/image/kyren3.jpeg",
-    discount: 5
-  }
-];
-
-const BestSeller: React.FC<ProductShowcaseProps> = ({ className }) => {
-    // Refs and state management
-    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-    const [isDragging, setIsDragging] = useState<boolean>(false);
-    const [startX, setStartX] = useState<number>(0);
-    const [scrollLeft, setScrollLeft] = useState<number>(0);
-    const [showLeftButton, setShowLeftButton] = useState<boolean>(false);
-    const [showRightButton, setShowRightButton] = useState<boolean>(true);
-  
-    // Handle scroll position and update navigation button visibility
-    const handleScroll = () => {
-      if (!scrollContainerRef.current) return;
-      
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setShowLeftButton(scrollLeft > 0);
-      setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10);
-    };
-  
-    // Set up scroll event listener
-    useEffect(() => {
-      const scrollContainer = scrollContainerRef.current;
-      if (scrollContainer) {
-        scrollContainer.addEventListener('scroll', handleScroll);
-        handleScroll();
-      }
-      return () => {
-        if (scrollContainer) {
-          scrollContainer.removeEventListener('scroll', handleScroll);
-        }
-      };
-    }, []);
-  
-    // Handle navigation button clicks
-    const scroll = (direction: 'left' | 'right') => {
-      if (!scrollContainerRef.current) return;
-  
-      const container = scrollContainerRef.current;
-      const scrollAmount = container.clientWidth;
-      const targetScroll = direction === 'left' 
-        ? container.scrollLeft - scrollAmount
-        : container.scrollLeft + scrollAmount;
-  
-      container.scrollTo({
-        left: targetScroll,
-        behavior: 'smooth'
-      });
-    };
-  
-    // Handle drag/swipe interactions
-    const handleDragStart = (e: React.MouseEvent | React.TouchEvent): void => {
-      setIsDragging(true);
-      const pageX = 'touches' in e ? e.touches[0].pageX : e.pageX;
-      
-      if (scrollContainerRef.current) {
-        setStartX(pageX - scrollContainerRef.current.offsetLeft);
-        setScrollLeft(scrollContainerRef.current.scrollLeft);
+  useEffect(() => {
+    const fetchBestsellers = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/api/products/bestsellers");
+        setProducts(response.data.data || []);
+      } catch (err: any) {
+        setError(
+          err.response?.data?.error || "Failed to load bestseller products"
+        );
+      } finally {
+        setLoading(false);
       }
     };
-  
-    const handleDragMove = (e: React.MouseEvent | React.TouchEvent): void => {
-      if (!isDragging || !scrollContainerRef.current) return;
-      e.preventDefault();
-      
-      const pageX = 'touches' in e ? e.touches[0].pageX : e.pageX;
-      const x = pageX - scrollContainerRef.current.offsetLeft;
-      const walk = (x - startX) * 2;
-      scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-    };
-  
-    const handleDragEnd = (): void => {
-      setIsDragging(false);
-    };
-  
-    // Render star rating
-    // const renderStars = (rating: number): JSX.Element[] => {
-    //   const stars: JSX.Element[] = [];
-    //   for (let i = 0; i < 5; i++) {
-    //     if (i < Math.floor(rating)) {
-    //       stars.push(<Star key={i} className="w-4 h-4 fill-current text-yellow-400" />);
-    //     } else if (i === Math.floor(rating) && rating % 1 !== 0) {
-    //       stars.push(<StarHalf key={i} className="w-4 h-4 fill-current text-yellow-400" />);
-    //     } else {
-    //       stars.push(<Star key={i} className="w-4 h-4 text-gray-300" />);
-    //     }
-    //   }
-    //   return stars;
-    // };
-  
-    return (
-        <div className={`relative w-full max-w-[1400px] mx-auto px-4 md:px-6 ${className || ''} pb-5`}>
-          <h2 className='text-2xl font-bold mb-6 my-16'>
-              Best Seller
-          </h2>
-          {/* Navigation buttons remain the same... */}
-          {showLeftButton && (
-            <button
-              onClick={() => scroll('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-200 backdrop-blur-sm"
-              aria-label="Previous items"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-          )}
-  
-          {showRightButton && (
-            <button
-              onClick={() => scroll('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-200 backdrop-blur-sm"
-              aria-label="Next items"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          )}
-  
-          {/* Product Container */}
-          <div
-            ref={scrollContainerRef}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar"
-            style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
-            onMouseDown={handleDragStart}
-            onMouseMove={handleDragMove}
-            onMouseUp={handleDragEnd}
-            onMouseLeave={handleDragEnd}
-            onTouchStart={handleDragStart}
-            onTouchMove={handleDragMove}
-            onTouchEnd={handleDragEnd}
-          >
-            {products.map((product: Product) => (
-              <div
-                key={product.id}
-                className="flex-none w-[280px] min-w-[280px] snap-start bg-white rounded-lg"
-              >
-                <ProductCard key={product.id} product={product} />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
+
+    fetchBestsellers();
+  }, []);
+
+  const checkScrollButtons = () => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
   };
-  
-  export default BestSeller;
+
+  useEffect(() => {
+    const scrollContainer = containerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", checkScrollButtons);
+      checkScrollButtons();
+      return () =>
+        scrollContainer.removeEventListener("scroll", checkScrollButtons);
+    }
+  }, [products]);
+
+  const scroll = (direction: "left" | "right") => {
+    if (containerRef.current) {
+      const scrollAmount = containerRef.current.clientWidth / 2;
+      containerRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
+  };
+
+  const getProductCartCount = (productId: string) => {
+    const item = items.find((item) => item.product.productId === productId);
+    return item ? item.quantity : 0;
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">Bestsellers</h2>
+        <div className="flex space-x-4 overflow-hidden">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex-none w-[280px]">
+              <div className="animate-pulse">
+                <div className="bg-gray-200 h-[280px] rounded-lg mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-600">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <h2 className="text-3xl font-bold text-center mb-8">Bestsellers</h2>
+
+      <div className="relative">
+        {showLeftArrow && (
+          <button
+            onClick={() => scroll("left")}
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-md hover:bg-gray-100"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft size={24} />
+          </button>
+        )}
+
+        {showRightArrow && (
+          <button
+            onClick={() => scroll("right")}
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-md hover:bg-gray-100"
+            aria-label="Scroll right"
+          >
+            <ChevronRight size={24} />
+          </button>
+        )}
+
+        <div
+          ref={containerRef}
+          className="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide"
+        >
+          {products.map((product) => {
+            const cartCount = getProductCartCount(product.productId);
+
+            return (
+              <div
+                key={product.productId}
+                className="flex-none w-[280px] bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <Link href={`/products/${product.slug}`}>
+                  <div className="relative h-[280px]">
+                    <Image
+                      src={product.images[0]}
+                      alt={product.name}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                </Link>
+
+                <div className="p-4">
+                  <Link
+                    href={`/products/${product.slug}`}
+                    className="text-lg font-semibold hover:text-blue-600 line-clamp-1"
+                  >
+                    {product.name}
+                  </Link>
+
+                  <div className="mt-2 flex items-center justify-between">
+                    <div className="text-lg font-bold">
+                      ${product.price.toFixed(2)}
+                      {product.discount > 0 && (
+                        <span className="ml-2 text-sm text-red-500">
+                          -{product.discount}% OFF
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-3">
+                    {cartCount === 0 ? (
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        disabled={product.stock === 0}
+                        className={`w-full ${
+                          product.stock > 0
+                            ? "bg-blue-600 hover:bg-blue-700"
+                            : "bg-gray-400 cursor-not-allowed"
+                        } text-white px-4 py-2 rounded text-sm`}
+                      >
+                        {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                      </button>
+                    ) : (
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() =>
+                            updateQuantity(product.productId, cartCount - 1)
+                          }
+                          className="px-3 py-2 border border-gray-300 rounded-l bg-gray-100 hover:bg-gray-200"
+                        >
+                          -
+                        </button>
+                        <span className="px-4 py-2 border-t border-b border-gray-300 bg-white">
+                          {cartCount}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(product.productId, cartCount + 1)
+                          }
+                          disabled={cartCount >= product.stock}
+                          className={`px-3 py-2 border border-gray-300 rounded-r ${
+                            cartCount >= product.stock
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "bg-gray-100 hover:bg-gray-200"
+                          }`}
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+    </div>
+  );
+}
