@@ -1,17 +1,18 @@
-import { getServerSession } from 'next-auth';
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel.js";
 import { NextRequest, NextResponse } from "next/server";
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { getUserFromToken } from "@/helpers/getUserFromToken";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
     try {
-      const session = await getServerSession();
-      if (!session?.user?.email) {
+      const userId = getUserFromToken(req);
+      if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
   
       await connect();
-      const user = await User.findOne({ email: session.user.email });
+      const user = await User.findById(userId);
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
@@ -26,17 +27,17 @@ export async function GET(req: Request) {
     }
   }
   
-  export async function POST(req: Request) {
+  export async function POST(req: NextRequest) {
     try {
-      const session = await getServerSession();
-      if (!session?.user?.email) {
+      const userId = getUserFromToken(req);
+      if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
   
       await connect();
       const body = await req.json();
   
-      const user = await User.findOne({ email: session.user.email });
+      const user = await User.findById(userId);
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }

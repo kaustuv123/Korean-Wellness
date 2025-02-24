@@ -62,7 +62,17 @@ export default function AddressList({
                   <Star className="h-4 w-4" />
                 </button>
               )}
-                            <button
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(address, index);
+                }}
+                className="p-2 text-gray-500 hover:text-green-600 transition-colors"
+                title="Edit address"
+              >
+                <Edit2 className="h-4 w-4" />
+              </button>
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(index);
