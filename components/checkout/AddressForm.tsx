@@ -9,15 +9,29 @@ interface AddressFormProps {
 }
 
 export default function AddressForm({ initialData, onSubmit, onCancel }: AddressFormProps) {
+  // Parse street into components if it exists in initialData
+  const parseStreetComponents = (street?: string) => {
+    if (!street) return { flat: '', area: '', landmark: '' };
+    
+    const components = street.split(' | ');
+    return {
+      flat: components[0] || '',
+      area: components[1] || '',
+      landmark: components[2] || ''
+    };
+  };
+
+  const streetComponents = parseStreetComponents(initialData?.street);
+
   const [formData, setFormData] = useState({
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
     phoneNumber: initialData?.phoneNumber || '',
     email: initialData?.email || '',
     alternatePhoneNumber: initialData?.alternatePhoneNumber || '',
-    flat: initialData?.flat || '',
-    area: initialData?.area || '',
-    landmark: initialData?.landmark || '',
+    flat: streetComponents.flat,
+    area: streetComponents.area,
+    landmark: streetComponents.landmark,
     city: initialData?.city || '',
     state: initialData?.state || '',
     postalCode: initialData?.postalCode || '',
@@ -35,7 +49,17 @@ export default function AddressForm({ initialData, onSubmit, onCancel }: Address
     }));
   };
 
+  // Add phone validation function
+  const isValidPhoneNumber = (phone: string) => {
+    return /^\d{10}$/.test(phone);
+  };
+
+  // Update isFieldInvalid function
   const isFieldInvalid = (fieldName: string) => {
+    if (fieldName === 'phoneNumber') {
+      return touchedFields[fieldName] && 
+        (!formData[fieldName] || !isValidPhoneNumber(formData[fieldName]));
+    }
     return touchedFields[fieldName] && !formData[fieldName as keyof typeof formData];
   };
 
@@ -44,6 +68,13 @@ export default function AddressForm({ initialData, onSubmit, onCancel }: Address
     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
     ${isFieldInvalid(fieldName) ? 'border-red-500' : ''}
   `;
+
+  // Update the phone number input section
+  const getPhoneErrorMessage = (phone: string) => {
+    if (!phone) return 'Phone number is required';
+    if (!isValidPhoneNumber(phone)) return 'Phone number must be 10 digits';
+    return '';
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,9 +100,10 @@ export default function AddressForm({ initialData, onSubmit, onCancel }: Address
       return;
     }
 
+    // Use pipe character as delimiter instead of comma
     const street = [formData.flat, formData.area, formData.landmark]
       .filter(Boolean)
-      .join(', ');
+      .join(' | ');
 
     const { flat, area, landmark, ...rest } = formData;
     const submitData = { ...rest, street };
@@ -141,10 +173,15 @@ export default function AddressForm({ initialData, onSubmit, onCancel }: Address
             id="phoneNumber"
             required
             value={formData.phoneNumber}
-            onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+            onChange={(e) => {
+              // Only allow digits
+              const value = e.target.value.replace(/\D/g, '');
+              setFormData({ ...formData, phoneNumber: value });
+            }}
             onBlur={() => handleBlur('phoneNumber')}
             placeholder=" "
             className={getInputClassName('phoneNumber')}
+            maxLength={10}
           />
           <label
             htmlFor="phoneNumber"
@@ -156,8 +193,10 @@ export default function AddressForm({ initialData, onSubmit, onCancel }: Address
           >
             Phone Number
           </label>
-          {isFieldInvalid('phoneNumber') && (
-            <p className="mt-1 text-xs text-red-500">Phone number is required</p>
+          {touchedFields.phoneNumber && (
+            <p className="mt-1 text-xs text-red-500">
+              {getPhoneErrorMessage(formData.phoneNumber)}
+            </p>
           )}
         </div>
 
