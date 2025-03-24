@@ -1,30 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
-import { CldUploadWidget } from "next-cloudinary";
+import Script from "next/script";
+
+interface Attribute {
+  name: string;
+  type: string;
+  required: boolean;
+}
+
+interface Category {
+  categoryId: string;
+  name: string;
+  attributes: Attribute[];
+}
 
 export default function SingleAddition() {
   const [formData, setFormData] = useState({
     productId: "",
     name: "",
     slug: "",
-    categoryId: "",
     category: "",
     description: "",
     price: "",
     discount: "",
-    images: [],
+    images: [], // Cloudinary Image URLs
     stock: "",
-    attributes: { size: "", purpose: "" },
+    size: "",
+    purpose: "",
+    attributes: {},
   });
 
+  // const [categories, setCategories] = useState<{ categoryId: string; name: string }[]>([]);
+  // const [categoryAttributes, setCategoryAttributes] = useState<{ name: string; type: string; required: boolean }[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [attributes, setAttributes] = useState<Record<string, string>>({});
 
-  // Handle input changes
-  const handleChange = (e) => {
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get("/api/categories");
+  //       setCategories(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching categories:", error);
+  //     }
+  //   };
+  //   fetchCategories();
+  // }, []);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch((error) => console.error("Error fetching categories:", error));
+  }, []);
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name.startsWith("attributes.")) {
       const key = name.split(".")[1];
@@ -37,19 +74,87 @@ export default function SingleAddition() {
     }
   };
 
-  // Handle Cloudinary upload success
-  const handleUploadSuccess = ({ info }) => {
-    if (info?.secure_url) {
-      setFormData(prev => ({ 
-        ...prev, 
-        images: [...prev.images, info.secure_url] 
+  // const handleCategoryChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+
+  //   const categoryId = e.target.value;
+  //   setFormData((prev) => ({ ...prev, category: categoryId, attributes: {} }));
+
+  //   try {
+  //     const response = await axios.get(`/api/categories/${categoryId}`);
+  //     const attributes = response.data.data.attributes || [];
+  //     setCategoryAttributes(attributes);
+
+  //     const defaultAttributes: Record<string, string> = {};
+  //     attributes.forEach((attr: { name: string }) => {
+  //       defaultAttributes[attr.name] = "";
+  //     });
+
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       attributes: defaultAttributes,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error fetching category attributes:", error);
+  //   }
+  // };
+
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const categoryId = event.target.value;
+    setSelectedCategory(categoryId);
+  
+    // Find the selected category
+    const category = categories.find((cat) => cat.categoryId === categoryId);
+    if (category) {
+      // Initialize attributes with empty values
+      const defaultAttributes: Record<string, string> = {};
+      category.attributes.forEach((attr) => {
+        defaultAttributes[attr.name] = "";
+      });
+  
+      // ✅ Update formData state as well
+      setFormData((prev) => ({
+        ...prev,
+        category: categoryId,
+        attributes: defaultAttributes,
       }));
-      setMessage("✅ Image uploaded successfully");
+  
+      setAttributes(defaultAttributes);
+    }
+  };
+  
+
+  const handleAttributeChange = (name: string, value: string) => {
+    setAttributes((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // ✅ Cloudinary Upload Widget
+  const openCloudinaryWidget = () => {
+    // @ts-expect-error
+    if (window.cloudinary) {
+      // @ts-expect-error
+      const myWidget = window.cloudinary.createUploadWidget(
+        {
+          cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+          uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET,
+          folder: "products",
+        },
+        (error: unknown, result: any) => {
+          if (!error && result && result.event === "success") {
+            setFormData((prev) => ({
+              ...prev,
+              images: [...prev.images, result.info.secure_url], // Store Cloudinary URL
+            }));
+            setMessage("✅ Image uploaded successfully!");
+          }
+        }
+      );
+      myWidget.open();
+    } else {
+      console.error("Cloudinary script not loaded.");
     }
   };
 
-  // Submit form
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -63,226 +168,159 @@ export default function SingleAddition() {
         productId: "",
         name: "",
         slug: "",
-        categoryId: "",
         category: "",
         description: "",
         price: "",
         discount: "",
         images: [],
         stock: "",
-        attributes: { size: "", purpose: "" },
+        size: "",
+        purpose: "",
+        attributes: {},
       });
     } catch (error) {
-      setMessage(
-        `❌ Error: ${error.response?.data?.error || "Something went wrong"}`
-      );
+      setMessage(`❌ Error: ${error.response?.data?.error || "Something went wrong"}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Add New Product</h2>
-      
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Product Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-              required
-            />
-          </div>
+    <div className="max-w-3xl mx-auto bg-white p-6 shadow-lg rounded-lg mt-10">
+      <h2 className="text-2xl font-bold mb-5">Add New Product</h2>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Slug
-            </label>
-            <input
-              type="text"
-              name="slug"
-              value={formData.slug}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-              required
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        {/* Product Name */}
+        <div>
+          <label className="block font-medium">Product Name</label>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full border p-2 rounded" required />
         </div>
 
-        {/* Category and Pricing */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-              required
-            >
-              <option value="">Select Category</option>
-              <option value="shampoos">Shampoos</option>
-              <option value="treatments">Treatments</option>
-              <option value="bodywash">Body Wash</option>
-              <option value="bodylotions">Body Lotions</option>
-              <option value="handwash">Hand Wash</option>
-            </select>
-          </div>
+        {/* Category Selection */}
+        <div>
+          <label className="block font-medium">Category</label>
+          {/* <select name="category" value={formData.category} onChange={handleCategoryChange} className="w-full border p-2 rounded" required>
+            <option value="">Select Category</option>
+            {categories.map((cat: any, index) => (
+              <option key={cat.categoryId || index} value={cat.categoryId}>
+                {cat.name}
+              </option>
+            ))}
+          </select> */}
+          <select onChange={handleCategoryChange} className="w-full p-2 border rounded">
+        <option value="">Select Category</option>
+        {categories.map((cat) => (
+          <option key={cat.categoryId} value={cat.categoryId}>
+            {cat.name}
+          </option>
+        ))}
+      </select>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Price
-              </label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Discount
-              </label>
-              <input
-                type="number"
-                name="discount"
-                value={formData.discount}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-              />
-            </div>
-          </div>
+        {/* Other Inputs */}
+        <div>
+          <label className="block font-medium">Slug</label>
+          <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border p-2 rounded" required />
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Stock
-            </label>
+        <div className="col-span-1">
+          <label className="block font-medium">Price</label>
+          <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full border p-2 rounded" required />
+        </div>
+
+        <div>
+          <label className="block font-medium">Discount</label>
+          <input
+            type="number"
+            name="discount"
+            value={formData.discount}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium">Stock</label>
+          <input
+            type="number"
+            name="stock"
+            value={formData.stock}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="col-span-2">
+          <label className="block font-medium">Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            rows={3}
+          />
+        </div>
+
+        {/* Image Upload via Cloudinary */}
+        <div className="col-span-2">
+          <label className="block font-medium">Product Image</label>
+          <button type="button" onClick={openCloudinaryWidget} className="px-4 py-2 bg-blue-500 text-white rounded mt-2">
+            Upload Image
+          </button>
+
+          {/* Show Uploaded Images */}
+          {formData.images.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {formData.images.map((url, index) => (
+                <Image key={index} src={url} alt="Product" width={80} height={80} className="object-cover border rounded" />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* {categoryAttributes.map((attr: { name: string, type: string, required: boolean }, index) => (
+          <div key={attr.name || index} className="col-span-1">
+            <label className="block text-sm font-medium text-gray-700">{attr.name}</label>
             <input
-              type="number"
-              name="stock"
-              value={formData.stock}
+              type={attr.type || "text"}
+              name={`attributes.${attr.name}`}
+              value={formData.attributes[attr.name] || ""}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-              required
+              required={attr.required}
+              className="w-full border p-2 rounded"
             />
           </div>
-        </div>
+        ))} */}
 
-        {/* Attributes and Images - Full Width */}
-        <div className="md:col-span-2 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Size
-              </label>
-              <input
-                type="text"
-                name="attributes.size"
-                value={formData.attributes.size}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Purpose
-              </label>
-              <input
-                type="text"
-                name="attributes.purpose"
-                value={formData.attributes.purpose}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-eggPlant focus:border-transparent"
-                required
-              />
-            </div>
-          </div>
+{selectedCategory &&
+  categories
+    .find((cat) => cat.categoryId === selectedCategory)
+    ?.attributes.map((attr, index) => (
+      <div key={attr.name || index} className="col-span-1">
+        <label className="block text-sm font-medium text-gray-700">{attr.name}</label>
+        <input
+          type={attr.type}
+          required={attr.required}
+          name={`attributes.${attr.name}`} // Ensure proper naming
+          value={attributes[attr.name] || ""}
+          onChange={(e) => handleAttributeChange(attr.name, e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+    ))}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Product Images
-            </label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
-              <div className="space-y-1 text-center">
-                <CldUploadWidget 
-                  uploadPreset="zc86sxcx" 
-                  onSuccess={handleUploadSuccess}
-                >
-                  {({open}) => (
-                    <button 
-                      type="button"
-                      onClick={() => open()} 
-                      className="bg-eggPlant text-white py-2 px-4 rounded-lg"
-                    >
-                      Upload
-                    </button>
-                  )}
-                </CldUploadWidget>
-              </div>
-            </div>
-            {formData.images.length > 0 && (
-              <div className="mt-4 flex gap-2 flex-wrap">
-                {formData.images.map((url, index) => (
-                  <Image
-                    key={index}
-                    src={url}
-                    alt={`Product ${index + 1}`}
-                    width={80}
-                    height={80}
-                    className="h-20 w-20 object-cover rounded"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* Submit Button - Full Width */}
-        <div className="md:col-span-2">
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-eggPlant text-white py-2 px-4 rounded-lg hover:bg-eggPlant/90 transition-colors disabled:bg-gray-400"
-          >
+
+        <div className="col-span-2">
+          <button type="submit" disabled={loading} className="px-4 py-2 bg-green-500 text-white rounded">
             {loading ? "Adding Product..." : "Add Product"}
           </button>
         </div>
       </form>
 
-      {message && (
-        <p className="mt-4 text-center text-sm font-medium">
-          {message}
-        </p>
-      )}
+      {message && <p className="mt-4 text-center text-sm font-medium">{message}</p>}
+
+      <Script src="https://widget.cloudinary.com/v2.0/global/all.js" strategy="lazyOnload" />
     </div>
   );
 }
