@@ -5,7 +5,7 @@ import { connect } from "@/dbConfig/dbConfig";
 const categories = [
     {
       name: "Shampoos",
-      categoryId: "shamp_001",
+      //categoryId: "shamp_001",
       attributes: [
         { name: "size", type: "text", required: true },
         { name: "purpose", type: "text", required: true },
@@ -14,7 +14,7 @@ const categories = [
     },
     {
       name: "Body Wash",
-      categoryId: "bw_001",
+      //categoryId: "bw_001",
       attributes: [
         { name: "size", type: "text", required: true },
         { name: "skinType", type: "text", required: true },
@@ -23,7 +23,7 @@ const categories = [
     },
     {
       name: "Treatments",
-      categoryId: "treat_001",
+      //categoryId: "treat_001",
       attributes: [
         { name: "size", type: "text", required: true },
         { name: "treatmentType", type: "text", required: true },
@@ -32,7 +32,7 @@ const categories = [
     },
     {
       name: "Body Lotions",
-      categoryId: "bl_001",
+      //categoryId: "bl_001",
       attributes: [
         { name: "size", type: "text", required: true },
         { name: "skinType", type: "text", required: true },
@@ -41,7 +41,7 @@ const categories = [
     },
     {
       name: "Hand Wash",
-      categoryId: "hw_001",
+      //categoryId: "hw_001",
       attributes: [
         { name: "size", type: "text", required: true },
         { name: "fragrance", type: "text", required: true },

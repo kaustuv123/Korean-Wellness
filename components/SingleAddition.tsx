@@ -98,27 +98,29 @@ export default function SingleAddition() {
   //   }
   // };
 
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
     const categoryId = event.target.value;
+    console.log(categoryId,"frontend ka sabkuch");
     setSelectedCategory(categoryId);
   
-    // Find the selected category
-    const category = categories.find((cat) => cat.categoryId === categoryId);
-    if (category) {
-      // Initialize attributes with empty values
+    try {
+      const response = await axios.get(`/api/categories/${categoryId}`);
+      const attributes = response.data.attributes || [];
+      console.log(attributes, "These are my attributes");
+      setAttributes(attributes);
+  
       const defaultAttributes: Record<string, string> = {};
-      category.attributes.forEach((attr) => {
+      attributes.forEach((attr: { name: string }) => {
         defaultAttributes[attr.name] = "";
       });
   
-      // ✅ Update formData state as well
       setFormData((prev) => ({
         ...prev,
         category: categoryId,
         attributes: defaultAttributes,
       }));
-  
-      setAttributes(defaultAttributes);
+    } catch (error) {
+      console.error("Error fetching category attributes:", error);
     }
   };
   
@@ -218,10 +220,10 @@ export default function SingleAddition() {
         </div>
 
         {/* Other Inputs */}
-        <div>
+        {/* <div>
           <label className="block font-medium">Slug</label>
           <input type="text" name="slug" value={formData.slug} onChange={handleChange} className="w-full border p-2 rounded" required />
-        </div>
+        </div> */}
 
         <div className="col-span-1">
           <label className="block font-medium">Price</label>

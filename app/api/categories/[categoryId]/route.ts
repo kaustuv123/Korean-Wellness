@@ -1,19 +1,38 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConfig/dbConfig";
-import Category from "@/models/categoryModel";
+import Category from "@/models/productModel";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await connect();
+export async function GET(request: NextRequest, context: { params: { categoryId: string } }) {
+  try {
+    await connect();
+    const { categoryId } = context.params;
+    console.log(categoryId,"yeh hai categoryid");
 
-  if (req.method === "GET") {
-    try {
-      const categories = await Category.find({}, "name categoryId attributes");
-      console.log(categories);
-      res.status(200).json(categories);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching categories", error });
+    if (!categoryId) {
+      return NextResponse.json(
+        { success: false, error: "Category ID is required" },
+        { status: 400 }
+      );
     }
-  } else {
-    res.status(405).json({ message: "Method Not Allowed" });
+
+    const category = await Category.findOne({ categoryId });
+    console.log(category, "or yeh hai category");
+
+    if (!category) {
+      return NextResponse.json(
+        { success: false, error: "Category not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: category,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
